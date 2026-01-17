@@ -206,8 +206,24 @@ npm run build
 ### 6. Configurar PM2
 
 ```bash
+# Criar arquivo de configuração PM2
+cat > ~/nfloor/ecosystem.config.js << 'EOF'
+module.exports = {
+  apps: [{
+    name: 'nfloor',
+    script: 'npm',
+    args: 'start',
+    cwd: '/home/ubuntu/nfloor',
+    env: {
+      NODE_ENV: 'production',
+      PORT: 3110
+    }
+  }]
+}
+EOF
+
 # Iniciar aplicação com PM2
-pm2 start npm --name "nfloor" -- start
+pm2 start ecosystem.config.js
 
 # Configurar para iniciar no boot
 pm2 startup
@@ -218,6 +234,36 @@ pm2 logs nfloor      # Ver logs
 pm2 restart nfloor   # Reiniciar
 pm2 stop nfloor      # Parar
 pm2 status           # Status
+```
+
+### 7. Inserir Dados de Teste (Opcional)
+
+```bash
+# Conectar ao banco
+sudo -u postgres psql -d nfloor_prod
+
+# Verificar IDs existentes
+SELECT id, name, company_id FROM "User" WHERE access_level = 'DIRECTOR';
+SELECT id, name FROM "Area" LIMIT 5;
+
+# Inserir lead de teste (ajuste os IDs conforme seu banco)
+INSERT INTO "Lead" (id, name, phone, email, status, notes, seller_id, area_id, company_id, created_at, updated_at)
+VALUES (
+  'lead_teste_001',
+  'Lead Teste',
+  '11999998888',
+  'teste@email.com',
+  'NEW',
+  'Lead de teste para validação',
+  'SEU_SELLER_ID',
+  'SEU_AREA_ID', 
+  'SEU_COMPANY_ID',
+  NOW(),
+  NOW()
+);
+
+# IMPORTANTE: O company_id do Lead DEVE ser igual ao company_id do usuário
+# para que o lead apareça na listagem
 ```
 
 ---
