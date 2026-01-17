@@ -122,9 +122,11 @@ interface PriorityLeadCardProps {
 }
 
 function PriorityLeadCard({ lead, rank, on_click }: PriorityLeadCardProps) {
-  const temp_config = TEMPERATURE_CONFIG[lead.temperature];
+  const temp_config = lead.temperature ? TEMPERATURE_CONFIG[lead.temperature] : null;
   const time_ago = lead.last_contact_at
     ? formatDistanceToNow(new Date(lead.last_contact_at), { addSuffix: true, locale: ptBR })
+    : lead.created_at
+    ? formatDistanceToNow(new Date(lead.created_at), { addSuffix: true, locale: ptBR })
     : "sem contato";
 
   return (
@@ -151,7 +153,7 @@ function PriorityLeadCard({ lead, rank, on_click }: PriorityLeadCardProps) {
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
             <span className="font-medium truncate">{lead.name}</span>
-            <div className={cn("w-2 h-2 rounded-full shrink-0", temp_config.bgColor)} />
+            {temp_config && <div className={cn("w-2 h-2 rounded-full shrink-0", temp_config.bgColor)} />}
           </div>
 
           <p className="text-sm text-muted-foreground truncate">
@@ -160,19 +162,15 @@ function PriorityLeadCard({ lead, rank, on_click }: PriorityLeadCardProps) {
           </p>
 
           <div className="flex items-center gap-3 mt-2">
-            <Badge variant="outline" className="text-xs">
-              {LEAD_SOURCE_LABELS[lead.source]}
-            </Badge>
+            {lead.source && (
+              <Badge variant="outline" className="text-xs">
+                {LEAD_SOURCE_LABELS[lead.source]}
+              </Badge>
+            )}
             <span className="text-xs text-muted-foreground flex items-center gap-1">
               <Clock className="h-3 w-3" />
               {time_ago}
             </span>
-            {lead.portal_score && (
-              <span className="text-xs text-orange-600 flex items-center gap-1">
-                <TrendingUp className="h-3 w-3" />
-                {lead.portal_score}%
-              </span>
-            )}
           </div>
         </div>
 
