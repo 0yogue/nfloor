@@ -1,13 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { LeadFull, LeadTemperature, TEMPERATURE_CONFIG } from "@/types/leads";
+import { LeadFull } from "@/types/leads";
 import { LeadListItem } from "./lead-list-item";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Search, Filter, Plus, Upload } from "lucide-react";
+import { Search, Plus, Upload } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface LeadListProps {
@@ -17,38 +16,45 @@ interface LeadListProps {
   on_import_click: () => void;
 }
 
+type StatusFilter = "ALL" | "NEW" | "QUALIFIED" | "CALLBACK" | "PROPOSAL" | "SOLD" | "LOST";
+
+const STATUS_OPTIONS: { value: StatusFilter; label: string; color: string }[] = [
+  { value: "ALL", label: "Todos", color: "" },
+  { value: "NEW", label: "Novos", color: "bg-blue-500" },
+  { value: "QUALIFIED", label: "Qualificados", color: "bg-cyan-500" },
+  { value: "CALLBACK", label: "Retorno", color: "bg-amber-500" },
+  { value: "PROPOSAL", label: "Proposta", color: "bg-orange-500" },
+  { value: "SOLD", label: "Vendidos", color: "bg-green-500" },
+];
+
 export function LeadList({ leads, selected_lead, on_select, on_import_click }: LeadListProps) {
   const [search, set_search] = useState("");
-  const [temp_filter, set_temp_filter] = useState<LeadTemperature | "ALL">("ALL");
+  const [status_filter, set_status_filter] = useState<StatusFilter>("ALL");
 
   const filtered_leads = leads.filter(lead => {
     const matches_search =
       search === "" ||
       lead.name.toLowerCase().includes(search.toLowerCase()) ||
-      lead.property_interest?.neighborhood?.toLowerCase().includes(search.toLowerCase()) ||
-      lead.phone?.includes(search);
+      lead.phone?.includes(search) ||
+      lead.email?.toLowerCase().includes(search.toLowerCase());
 
-    const matches_temp = temp_filter === "ALL" || lead.temperature === temp_filter;
+    const matches_status = status_filter === "ALL" || lead.status === status_filter;
 
-    return matches_search && matches_temp;
+    return matches_search && matches_status;
   });
 
   const sorted_leads = [...filtered_leads].sort((a, b) => {
-    const temp_order = { HOT: 0, WARM: 1, COOLING: 2, COLD: 3 };
-    const temp_diff = temp_order[a.temperature] - temp_order[b.temperature];
-    if (temp_diff !== 0) return temp_diff;
-
-    const a_time = a.last_message_at ? new Date(a.last_message_at).getTime() : 0;
-    const b_time = b.last_message_at ? new Date(b.last_message_at).getTime() : 0;
+    const a_time = a.created_at ? new Date(a.created_at).getTime() : 0;
+    const b_time = b.created_at ? new Date(b.created_at).getTime() : 0;
     return b_time - a_time;
   });
 
-  const temp_counts = leads.reduce(
+  const status_counts = leads.reduce(
     (acc, lead) => {
-      acc[lead.temperature] = (acc[lead.temperature] || 0) + 1;
+      acc[lead.status] = (acc[lead.status] || 0) + 1;
       return acc;
     },
-    {} as Record<LeadTemperature, number>
+    {} as Record<string, number>
   );
 
   return (
@@ -70,24 +76,16 @@ export function LeadList({ leads, selected_lead, on_select, on_import_click }: L
         </div>
 
         <div className="flex items-center gap-1 overflow-x-auto pb-1">
-          <Button
-            variant={temp_filter === "ALL" ? "default" : "ghost"}
-            size="sm"
-            className="h-7 text-xs shrink-0"
-            onClick={() => set_temp_filter("ALL")}
-          >
-            Todos ({leads.length})
-          </Button>
-          {Object.entries(TEMPERATURE_CONFIG).map(([temp, config]) => (
+          {STATUS_OPTIONS.map((opt) => (
             <Button
-              key={temp}
-              variant={temp_filter === temp ? "default" : "ghost"}
+              key={opt.value}
+              variant={status_filter === opt.value ? "default" : "ghost"}
               size="sm"
-              className={cn("h-7 text-xs shrink-0 gap-1", temp_filter !== temp && config.color)}
-              onClick={() => set_temp_filter(temp as LeadTemperature)}
+              className="h-7 text-xs shrink-0 gap-1"
+              onClick={() => set_status_filter(opt.value)}
             >
-              <div className={cn("w-2 h-2 rounded-full", config.bgColor)} />
-              {config.label} ({temp_counts[temp as LeadTemperature] || 0})
+              {opt.color && <div className={cn("w-2 h-2 rounded-full", opt.color)} />}
+              {opt.label} ({opt.value === "ALL" ? leads.length : status_counts[opt.value] || 0})
             </Button>
           ))}
         </div>
@@ -96,7 +94,7 @@ export function LeadList({ leads, selected_lead, on_select, on_import_click }: L
       <ScrollArea className="flex-1">
         {sorted_leads.length === 0 ? (
           <div className="p-4 text-center text-muted-foreground text-sm">
-            {search || temp_filter !== "ALL" ? "Nenhum lead encontrado" : "Nenhum lead cadastrado"}
+            {search || status_filter !== "ALL" ? "Nenhum lead encontrado" : "Nenhum lead cadastrado"}
           </div>
         ) : (
           sorted_leads.map(lead => (

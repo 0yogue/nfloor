@@ -3,6 +3,7 @@ import { get_session_user } from "@/lib/auth/session";
 import { get_all_leads, get_leads_by_seller, get_leads_by_company } from "@/lib/leads";
 import { get_cooling_leads } from "@/lib/leads/temperature-ai";
 import { AccessLevel } from "@/types/rbac";
+import { LeadFull } from "@/types/leads";
 
 export async function GET(request: NextRequest) {
   try {
@@ -12,7 +13,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ success: false, error: "Não autenticado" }, { status: 401 });
     }
 
-    let leads;
+    let leads: LeadFull[] = [];
 
     switch (user.access_level) {
       case AccessLevel.SUPER_ADMIN:

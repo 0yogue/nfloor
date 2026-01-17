@@ -121,7 +121,7 @@ export function AppSidebar({ user }: AppSidebarProps) {
   const visible_admin_items = admin_nav_items.filter((item) => item.visible);
 
   return (
-    <Sidebar>
+    <Sidebar collapsible="icon">
       <SidebarHeader className="border-b border-sidebar-border">
         <div className="flex items-center gap-3 px-2 py-3">
           <div className="flex items-center justify-center w-9 h-9 rounded-lg bg-sidebar-primary">
@@ -143,7 +143,7 @@ export function AppSidebar({ user }: AppSidebarProps) {
             <SidebarMenu>
               {visible_main_items.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
+                  <SidebarMenuButton asChild tooltip={item.title}>
                     <Link href={item.url}>
                       <item.icon className="w-4 h-4" />
                       <span>{item.title}</span>
@@ -162,7 +162,7 @@ export function AppSidebar({ user }: AppSidebarProps) {
               <SidebarMenu>
                 {visible_admin_items.map((item) => (
                   <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton asChild>
+                    <SidebarMenuButton asChild tooltip={item.title}>
                       <Link href={item.url}>
                         <item.icon className="w-4 h-4" />
                         <span>{item.title}</span>

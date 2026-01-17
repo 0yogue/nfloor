@@ -14,10 +14,94 @@ import { ptBR } from "date-fns/locale";
 import { DateRange } from "react-day-picker";
 import { ACCESS_LEVEL_LABELS, Feature, AccessLevel } from "@/types/rbac";
 import { cn } from "@/lib/utils";
-import { MetricsCards } from "@/components/dashboard/metrics-cards";
 import { SubordinatesTable } from "@/components/dashboard/subordinates-table";
 import { TeamMetricsCards } from "@/components/dashboard/team-metrics-cards";
 import { SellerRankingTable } from "@/components/dashboard/seller-ranking";
+import { SalesFunnel } from "@/components/dashboard/sales-funnel";
+
+interface ImprovementSuggestion {
+  title: string;
+  description: string;
+  priority: "high" | "medium" | "low";
+}
+
+function get_improvement_suggestions(
+  metrics: LeadMetrics,
+  team_metrics?: TeamMetrics
+): ImprovementSuggestion[] {
+  const suggestions: ImprovementSuggestion[] = [];
+  
+  const total_leads = metrics.new_count + metrics.qualified_count + metrics.callback_count + metrics.proposal_count + metrics.sold_count;
+  const conversion_rate = total_leads > 0 ? (metrics.sold_count / metrics.new_count) * 100 : 0;
+  const qualification_rate = metrics.new_count > 0 ? (metrics.qualified_count / metrics.new_count) * 100 : 0;
+  const proposal_rate = metrics.qualified_count > 0 ? (metrics.proposal_count / metrics.qualified_count) * 100 : 0;
+  
+  if (metrics.new_count > 0 && qualification_rate < 30) {
+    suggestions.push({
+      title: "Baixa Taxa de Qualificação",
+      description: `Apenas ${qualification_rate.toFixed(0)}% dos novos leads são qualificados. Revise os critérios de entrada.`,
+      priority: "high",
+    });
+  }
+  
+  if (metrics.callback_count > metrics.qualified_count * 0.5) {
+    suggestions.push({
+      title: "Muitos Leads em Retorno",
+      description: `${metrics.callback_count} leads aguardando retorno. Priorize o follow-up.`,
+      priority: "high",
+    });
+  }
+  
+  if (team_metrics && team_metrics.leads_without_response > 0) {
+    suggestions.push({
+      title: "Leads Sem Resposta",
+      description: `${team_metrics.leads_without_response} leads ainda não foram contatados.`,
+      priority: "high",
+    });
+  }
+  
+  if (team_metrics && team_metrics.avg_response_time > 30) {
+    suggestions.push({
+      title: "Tempo de Resposta Alto",
+      description: `Média de ${team_metrics.avg_response_time} min. Meta: < 15 minutos.`,
+      priority: "medium",
+    });
+  }
+  
+  if (conversion_rate < 5 && metrics.new_count > 10) {
+    suggestions.push({
+      title: "Taxa de Conversão Baixa",
+      description: `Conversão de ${conversion_rate.toFixed(1)}%. Analise o funil de vendas.`,
+      priority: "medium",
+    });
+  }
+  
+  if (proposal_rate < 40 && metrics.qualified_count > 5) {
+    suggestions.push({
+      title: "Poucas Propostas Enviadas",
+      description: `Apenas ${proposal_rate.toFixed(0)}% dos qualificados recebem proposta.`,
+      priority: "medium",
+    });
+  }
+  
+  if (team_metrics && team_metrics.avg_playbook_score < 70) {
+    suggestions.push({
+      title: "Score de Playbook Baixo",
+      description: `Média de ${team_metrics.avg_playbook_score}%. Reforce treinamento.`,
+      priority: "low",
+    });
+  }
+  
+  if (suggestions.length === 0) {
+    suggestions.push({
+      title: "Métricas Saudáveis",
+      description: "Todas as métricas estão dentro do esperado. Continue o bom trabalho!",
+      priority: "low",
+    });
+  }
+  
+  return suggestions.slice(0, 5);
+}
 
 interface LeadMetrics {
   new_count: number;
@@ -245,12 +329,6 @@ export default function DashboardPage() {
         </Card>
       )}
 
-      <MetricsCards
-        metrics={dashboard_data?.total_metrics || empty_metrics}
-        title="Funil de Vendas"
-        is_loading={is_loading}
-      />
-
       {user.access_level !== AccessLevel.SELLER && dashboard_data?.team_metrics && (
         <TeamMetricsCards
           metrics={dashboard_data.team_metrics}
@@ -272,10 +350,47 @@ export default function DashboardPage() {
         />
       )}
 
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className="grid gap-4 lg:grid-cols-3">
+        <SalesFunnel
+          metrics={dashboard_data?.total_metrics || empty_metrics}
+          is_loading={is_loading}
+        />
+
         <Card>
-          <CardHeader>
-            <CardTitle>Ligue Para Esses Hoje</CardTitle>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg">Top Melhorias</CardTitle>
+            <CardDescription>Métricas que precisam de atenção</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              {get_improvement_suggestions(dashboard_data?.total_metrics || empty_metrics, dashboard_data?.team_metrics).map((item, i) => (
+                <div
+                  key={i}
+                  className="flex items-center gap-2 p-2 rounded-lg border bg-card hover:bg-accent/50 transition-colors"
+                >
+                  <div
+                    className={cn(
+                      "w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-bold shrink-0",
+                      item.priority === "high" && "bg-red-500",
+                      item.priority === "medium" && "bg-amber-500",
+                      item.priority === "low" && "bg-blue-500"
+                    )}
+                  >
+                    {i + 1}
+                  </div>
+                  <div className="min-w-0">
+                    <p className="font-medium text-sm truncate">{item.title}</p>
+                    <p className="text-xs text-muted-foreground truncate">{item.description}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg">Ligue Hoje</CardTitle>
             <CardDescription>
               Leads prioritários ordenados por temperatura
             </CardDescription>
@@ -318,39 +433,6 @@ export default function DashboardPage() {
                   </div>
                 </div>
               ))}
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Configuração de Dados</CardTitle>
-            <CardDescription>Fonte de dados atual</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="p-4 rounded-lg bg-muted/50">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium">Fonte de Dados</span>
-                <Badge variant="secondary">Mock JSON</Badge>
-              </div>
-              <p className="text-xs text-muted-foreground">
-                Os dados exibidos são simulados para demonstração. Configure a variável
-                de ambiente <code className="bg-muted px-1 rounded">DASHBOARD_DATA_SOURCE=prisma</code> para
-                usar dados reais do banco.
-              </p>
-            </div>
-            
-            <div className="p-4 rounded-lg bg-primary/10 border border-primary/20">
-              <div className="text-sm font-medium text-primary mb-1">
-                Nível de Acesso: {ACCESS_LEVEL_LABELS[user.access_level]}
-              </div>
-              <p className="text-xs text-muted-foreground">
-                {user.access_level === "SELLER" && "Você vê apenas suas próprias métricas."}
-                {user.access_level === "MANAGER" && "Você vê as métricas do seu time de vendedores."}
-                {user.access_level === "SUPERINTENDENT" && "Você vê as métricas dos gerentes nas suas áreas."}
-                {user.access_level === "DIRECTOR" && "Você vê as métricas de toda a empresa."}
-                {user.access_level === "SUPER_ADMIN" && "Você tem acesso a todas as empresas do sistema."}
-              </p>
             </div>
           </CardContent>
         </Card>

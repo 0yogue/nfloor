@@ -42,6 +42,15 @@ const OPERATION_TYPE_LABELS: Record<OperationType, string> = {
   [OperationType.BOTH]: "Venda/Aluguel",
 };
 
+const STATUS_CONFIG: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
+  NEW: { label: "Novo", variant: "default" },
+  QUALIFIED: { label: "Qualificado", variant: "secondary" },
+  CALLBACK: { label: "Retorno", variant: "outline" },
+  PROPOSAL: { label: "Proposta", variant: "secondary" },
+  SOLD: { label: "Vendido", variant: "default" },
+  LOST: { label: "Perdido", variant: "destructive" },
+};
+
 function format_currency(value: number): string {
   return new Intl.NumberFormat("pt-BR", {
     style: "currency",
@@ -62,7 +71,9 @@ export function LeadDetails({ lead }: LeadDetailsProps) {
     );
   }
 
-  const temp_config = TEMPERATURE_CONFIG[lead.temperature];
+  const temp_config = lead.temperature ? TEMPERATURE_CONFIG[lead.temperature] : null;
+  const status_config = STATUS_CONFIG[lead.status] || STATUS_CONFIG.NEW;
+  const source_label = lead.source ? LEAD_SOURCE_LABELS[lead.source] : null;
   const property = lead.property_interest;
 
   return (
@@ -73,11 +84,15 @@ export function LeadDetails({ lead }: LeadDetailsProps) {
             <div>
               <CardTitle className="text-xl">{lead.name}</CardTitle>
               <CardDescription className="flex items-center gap-2 mt-1">
-                <Badge variant="outline" className={temp_config.color}>
-                  {temp_config.label}
+                <Badge variant={status_config.variant}>
+                  {status_config.label}
                 </Badge>
-                <span>•</span>
-                <span>{LEAD_SOURCE_LABELS[lead.source]}</span>
+                {source_label && (
+                  <>
+                    <span>•</span>
+                    <span>{source_label}</span>
+                  </>
+                )}
               </CardDescription>
             </div>
             {lead.hours_without_response && lead.hours_without_response > 2 && (

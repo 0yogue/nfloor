@@ -1,24 +1,324 @@
 Delivered-To: yogue@fluxos.co
-From: ZAP Imóveis <noreply@comunica.zapimoveis.com.br>
-Subject: Venda - Consulta para o imóvel em Rua Aimberê 206 - Perdizes, São Paulo - São Paulo CÓD. AP14150_SKY
-To: corretor@imobiliaria.com.br
-Date: Fri, 16 Jan 2026 12:26:54 -0800
+Received: by 2002:a05:6200:778c:b0:625:e7b5:4101 with SMTP id jx12csp1937741qnb;
+        Fri, 16 Jan 2026 12:26:55 -0800 (PST)
+X-Forwarded-Encrypted: i=2; AJvYcCUQ6HGrgQdIEn1XZCeGaIMyqS9kcTPEfMNp50HU5aR4dqlJGkzehqcMLReXsx/7UlLMI4LOHA==@fluxos.co
+X-Received: by 2002:a05:620a:1a10:b0:8b2:76c6:a7d2 with SMTP id af79cd13be357-8c6a66e8a91mr534978685a.9.1768595214975;
+        Fri, 16 Jan 2026 12:26:54 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1768595214; cv=none;
+        d=google.com; s=arc-20240605;
+        b=NxdXx4qZpZv7lt9pLvR+8lICWzvne9OuiaeR5H5FGiqmZ76u2HtbTPXlxvDHrR+CmO
+         Hg1svEtbgGdPUZ/3QLAdsQ79PVa7kK6cg7duEuyOHKXMGrgzXO6EQRrexW8SaYDPbBNI
+         smAGuSQv8JZxvhR4WSHaYyB8Kxr33NW0iJBSj995ih3fvkHrJ3aL0cH7xBZvEh8SQyni
+         +mRhdEannybQ7L9sA1Pax+f2+gt4g0Co0z1f65T3+VSiea3qx6GFHRZnifh3RjV1bmTb
+         DxdikTpKJAPOdaW9hEmvo9GmlNUE7Dss6GTgHELiGg/IrGrQQ4WtSOcjkiXj9pRNU0R4
+         p8vQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=feedback-id:message-id:content-transfer-encoding:from:process-id:cc
+         :event:destination-email:sender:bu:category-id:account-id:source
+         :subject:cco:reply-to:to:date:mime-version:dkim-signature
+         :dkim-signature;
+        bh=5AHbLgaBY2qkz7NJHEVjLO/fvXUZiT6BMLBAix/hGDw=;
+        fh=29Ic/cwcFf5agQMiJGskSzXUECB0aTcqdxzcS/mhC2E=;
+        b=XcURHXSw8iHQHpkqg5oS9fvgjnbGEeIrSCkWWk4JZTdQiBb3hCDxsk3l9QhuRZtwS2
+         q2k5/V71FUky31KcBEsv/HrEoolfVrQ+vOWE6eFHsc7wt5kYIAwba9jBJtiVOqcMXq/P
+         mQpoK8RnxUWeHOFbrsfWBDLCxuB/ucU+8nB9H/hh8V+VwYT8VpJvGx1vDW1KuSke5Vxt
+         LfOidX0rbWXTQnoXxJgIIYWRUjBYLC+XZQb5ObBdwgsIeOOrFjYV0QLOoyHsN5GWwQIU
+         SYIkMr6VD3piWAZus4LLc90RFceEsH+Oevz/+dAY8HN6cA3YAXDOwBaQTgRt/m/vNMQu
+         WX0Q==;
+        dara=google.com
+ARC-Authentication-Results: i=1; mx.google.com;
+       dkim=pass header.i=@comunica.zapimoveis.com.br header.s=rnzm6tjvwn3if6h6s3xgv47yjfgzremm header.b=nFlo35wL;
+       dkim=pass header.i=@amazonses.com header.s=6gbrjpgwjskckoa6a5zn6fwqkn67xbtw header.b=Gej4Dc1w;
+       spf=pass (google.com: domain of 0100019bc87d5079-83955f7c-7965-46a4-9c77-ec920e031ab5-000000@mail.comunica.zapimoveis.com.br designates 54.240.11.49 as permitted sender) smtp.mailfrom=0100019bc87d5079-83955f7c-7965-46a4-9c77-ec920e031ab5-000000@mail.comunica.zapimoveis.com.br;
+       dmarc=pass (p=REJECT sp=REJECT dis=NONE) header.from=comunica.zapimoveis.com.br
+Return-Path: <0100019bc87d5079-83955f7c-7965-46a4-9c77-ec920e031ab5-000000@mail.comunica.zapimoveis.com.br>
+Received: from a11-49.smtp-out.amazonses.com (a11-49.smtp-out.amazonses.com. [54.240.11.49])
+        by mx.google.com with ESMTPS id af79cd13be357-8c6a7292b92si341057585a.575.2026.01.16.12.26.54
+        for <yogue@fluxos.co>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 16 Jan 2026 12:26:54 -0800 (PST)
+Received-SPF: pass (google.com: domain of 0100019bc87d5079-83955f7c-7965-46a4-9c77-ec920e031ab5-000000@mail.comunica.zapimoveis.com.br designates 54.240.11.49 as permitted sender) client-ip=54.240.11.49;
+Authentication-Results: mx.google.com;
+       dkim=pass header.i=@comunica.zapimoveis.com.br header.s=rnzm6tjvwn3if6h6s3xgv47yjfgzremm header.b=nFlo35wL;
+       dkim=pass header.i=@amazonses.com header.s=6gbrjpgwjskckoa6a5zn6fwqkn67xbtw header.b=Gej4Dc1w;
+       spf=pass (google.com: domain of 0100019bc87d5079-83955f7c-7965-46a4-9c77-ec920e031ab5-000000@mail.comunica.zapimoveis.com.br designates 54.240.11.49 as permitted sender) smtp.mailfrom=0100019bc87d5079-83955f7c-7965-46a4-9c77-ec920e031ab5-000000@mail.comunica.zapimoveis.com.br;
+       dmarc=pass (p=REJECT sp=REJECT dis=NONE) header.from=comunica.zapimoveis.com.br
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/simple;
+	s=rnzm6tjvwn3if6h6s3xgv47yjfgzremm; d=comunica.zapimoveis.com.br;
+	t=1768595214;
+	h=Mime-Version:Date:To:Reply-To:Subject:Sender:Cc:From:Content-Transfer-Encoding:Content-Type:Message-ID;
+	bh=KdPsc68uOky/Oahmaztq7XKW3qJOoq7EdW66bTB3BK4=;
+	b=nFlo35wL+JoJp+R1h23pT4ItlVhAR+WQiVP0FtrNqy/0rJm1WE5oTrHhTlYb0VW4
+	a29LR9NKDTK16P5m4IWN6+GBV7NNs+w31R4SPqbyT4lbzP8ggCdt7Yn/n10EWFR20fP
+	mQnxTOwLjcTTGdZ8Dqfa9PUGxa+H35tfeJAWwPqUAtpoPHFnAkS6Bvea1YUCRyezrk3
+	CHFwArj0X0V0BdzFmBTvhL1hHt/OGK4RZ9rXlBQOoqEw4Cns0PsvL4c05YkKp8hgGpP
+	WCN9U51s1Ju9+Sqyi8fDJWjmKPtTlpMlZiUJHPWbS6IK+XQUttw7qG7uYOeEDy0aTe5
+	51AMvjpCKw==
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/simple;
+	s=6gbrjpgwjskckoa6a5zn6fwqkn67xbtw; d=amazonses.com; t=1768595214;
+	h=Mime-Version:Date:To:Reply-To:Subject:Sender:Cc:From:Content-Transfer-Encoding:Content-Type:Message-ID:Feedback-ID;
+	bh=KdPsc68uOky/Oahmaztq7XKW3qJOoq7EdW66bTB3BK4=;
+	b=Gej4Dc1w0GC1uVegcEpWIz9u2DOKz50rastv9fgFtWRcpsArVgMZL3kxgeUUmDcN
+	T5t0USn8MQygPmMcdomP6wRnRvGqtmXhkeqwiZOH4P3gASDxz5rBlK9Ihyc3E65QmEj
+	XaKWD9l81pE23h5tp+OZi6AVdNoNMobPCBtoulRw=
+Mime-Version: 1.0
+Date: Fri, 16 Jan 2026 20:26:54 +0000
+To: caique@vistalivreimob.com.br, leads@vistalivreimob.com.br, 
+	yogue@fluxos.co
+Reply-To: labgnsidns@hotmail.com
+Cco: 
+Subject: =?UTF-8?q?Venda_-_Consulta_para_o_im=C3=B3vel_em_Rua_Aimber=C3=AA_206_-_P?=
+ =?UTF-8?q?erdizes,_S=C3=A3o_Paulo_-_S=C3=A3o_Paulo_C=C3=93D._AP14150=5FSK?=
+ =?UTF-8?q?Y?=
+Source: CLM
+Account-ID: 
+Category-ID: 
+Bu: ZAP
+Sender: noreply@comunica.zapimoveis.com.br
+Destination-Email: yogue@fluxos.co
+Event: NewLeadV2
+Cc: 
+Process-ID: 9293929aab4d45ad9d0d0535b737dc83
+From: Zap <noreply@comunica.zapimoveis.com.br>
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/html; charset=UTF-8
+Message-ID: <0100019bc87d5079-83955f7c-7965-46a4-9c77-ec920e031ab5-000000@email.amazonses.com>
+Feedback-ID: ::1.us-east-1.hA94BSM6OjCk5UuNLZ30sND9bzRB707UIaTt6rZ2E0M=:AmazonSES
+X-SES-Outgoing: 2026.01.16-54.240.11.49
 
-=== CAMPOS EXTRAÍDOS ===
-- portal: ZAP Imóveis
-- tipo_operacao: Venda
-- endereco: Rua Aimberê 206 - Perdizes, São Paulo - São Paulo
-- codigo_imovel: AP14150_SKY
-- nome_lead: (extrair do corpo)
-- email_lead: (extrair do corpo)
-- telefone_lead: (extrair do corpo)
-- mensagem: (extrair do corpo)
-- data_contato: 2026-01-16
 
-=== OUTROS PORTAIS ESPERADOS ===
-- OLX Imóveis
-- Viva Real
-- Imovel Web
-- QuintoAndar
-- Chaves na Mão
-- Facebook Marketplace
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org=
+/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html
+
+    dir=3D"ltr"
+    xmlns=3D"http://www.w3.org/1999/xhtml"
+    xmlns:v=3D"urn:schemas-microsoft-com:vml"
+    xmlns:o=3D"urn:schemas-microsoft-com:office:office">
+    <head>
+    <meta http-equiv=3D"Content-Type" content=3D"text/html; charset=3Dutf-8=
+" />
+    <meta http-equiv=3D"X-UA-Compatible" content=3D"IE=3Dedge" />
+    <meta name=3D"viewport" content=3D"user-scalable=3Dno, initial-scale=3D=
+1.0, maximum-scale=3D1.0, width=3Ddevice-width" />
+    <title></title>
+
+    <style type=3D"text/css">
+        @media (max-width:600px){#__body__,#__footer__,#__header__{width:au=
+to!important}#__renaultTitle__{padding:0!important}}
+
+        #__bodyTable__ {
+        margin: 0;
+        padding: 0;
+        width: 100% !important;
+        }
+
+        body {
+            font-family: "Nunito Sans","Helvetica Neue",HelveticaNeue,Helve=
+tica,Arial,sans-serif;
+        }
+    </style>
+
+    <!--[if gte mso 9]>
+        <xml>
+        <o:OfficeDocumentSettings>
+            <o:AllowPNG/>
+            <o:PixelsPerInch>96</o:PixelsPerInch>
+        </o:OfficeDocumentSettings>
+        </xml>
+    <![endif]-->
+    </head>
+    <body bgcolor=3D"#FFFFFF" width=3D"100%" style=3D"-webkit-font-smoothin=
+g: antialiased; width:100% !important; background:#FFFFFF;-webkit-text-size=
+-adjust:none; margin:0; padding:0; min-width:100%; direction: ltr;">
+    <table bgcolor=3D"#FFFFFF" id=3D"__bodyTable__" width=3D"100%" style=3D=
+"-webkit-font-smoothing: antialiased; width:100% !important; background:#FF=
+FFFF;-webkit-text-size-adjust:none; margin:0; padding:0; min-width:100%">
+        <tr>
+        <td align=3D"center">
+            <span style=3D"display: none !important; color: #FFFFFF; margin=
+:0; padding:0; font-size:1px; line-height:1px;"></span>
+            <div style=3D"background-color:#F5F5F5;padding:40px 0"><div sty=
+le=3D"width:600px;background-color:#FFFFFF;border-radius:8px;box-shadow:0 0=
+ 10px rgba(0, 0, 0, 0.1)"><div style=3D"font-family:Verdana, 'Helvetica Neu=
+e', HelveticaNeue, Helvetica, Arial, sans-serif;margin:0 0 20px 0;backgroun=
+d-image:url('https://static.olx.com.br/nu/email/images/png/bg-header-lead.p=
+ng');background-size:cover;background-position:center;color:white;padding:4=
+2px 24px;border-radius:8px 8px 0 0;text-align:left;font-size:18px;font-weig=
+ht:bold"><img src=3D"https://static.olx.com.br/nu/email/images/png/grupo-ol=
+x-white.png" width=3D"89" height=3D"18"/><p style=3D"text-align:left;margin=
+:0;padding:0;color:white;line-height:32px;font-family:Zona Pro, sans-serif;=
+margin-top:24px;font-size:24px">Cliente entrou em contato via WhatsApp</p><=
+p style=3D"text-align:left;margin:0;padding:0;color:white;line-height:26px;=
+font-family:Roboto, sans-serif;margin-top:16px;font-weight:normal;font-size=
+:20px">Larissa se interessou pelo im=C3=B3vel e entrou em contato pelo What=
+sApp. Mantenha o contato com o cliente para garantir uma boa experi=C3=AAnc=
+ia.</p></div><div style=3D"font-family:Verdana, 'Helvetica Neue', Helvetica=
+Neue, Helvetica, Arial, sans-serif;margin:0 0 20px 0;padding:0 20px"><p sty=
+le=3D"text-align:left;margin:0;padding:0;color:#3C4453;line-height:24px;fon=
+t-family:Verdana, 'Helvetica Neue', HelveticaNeue, Helvetica, Arial, sans-s=
+erif;font-size:14px;font-weight:400;padding-bottom:8px">Como voc=C3=AA aval=
+ia o potencial de compra do lead?</p><table align=3D"left"><tbody><tr><td s=
+tyle=3D"font-size:14px;color:#5E6A82;font-weight:400;padding-top:8px">Baixo=
+</td><td><a href=3D"https://feedback-lead.grupozap.com/d53e4dc1-6670-4cd2-a=
+ce4-611e96856a13/?answer=3D1" style=3D"color:#6E0AD6;text-decoration:none;f=
+ont-family:Verdana, 'Helvetica Neue', HelveticaNeue, Helvetica, Arial, sans=
+-serif"><img src=3D"https://static.olx.com.br/nu/email/images/png/icon-star=
+-avaliation-lead.png" style=3D"width:24px;height:24px;margin:0 4px"/></a></=
+td><td><a href=3D"https://feedback-lead.grupozap.com/d53e4dc1-6670-4cd2-ace=
+4-611e96856a13/?answer=3D2" style=3D"color:#6E0AD6;text-decoration:none;fon=
+t-family:Verdana, 'Helvetica Neue', HelveticaNeue, Helvetica, Arial, sans-s=
+erif"><img src=3D"https://static.olx.com.br/nu/email/images/png/icon-star-a=
+valiation-lead.png" style=3D"width:24px;height:24px;margin:0 4px"/></a></td=
+><td><a href=3D"https://feedback-lead.grupozap.com/d53e4dc1-6670-4cd2-ace4-=
+611e96856a13/?answer=3D3" style=3D"color:#6E0AD6;text-decoration:none;font-=
+family:Verdana, 'Helvetica Neue', HelveticaNeue, Helvetica, Arial, sans-ser=
+if"><img src=3D"https://static.olx.com.br/nu/email/images/png/icon-star-ava=
+liation-lead.png" style=3D"width:24px;height:24px;margin:0 4px"/></a></td><=
+td><a href=3D"https://feedback-lead.grupozap.com/d53e4dc1-6670-4cd2-ace4-61=
+1e96856a13/?answer=3D4" style=3D"color:#6E0AD6;text-decoration:none;font-fa=
+mily:Verdana, 'Helvetica Neue', HelveticaNeue, Helvetica, Arial, sans-serif=
+"><img src=3D"https://static.olx.com.br/nu/email/images/png/icon-star-avali=
+ation-lead.png" style=3D"width:24px;height:24px;margin:0 4px"/></a></td><td=
+><a href=3D"https://feedback-lead.grupozap.com/d53e4dc1-6670-4cd2-ace4-611e=
+96856a13/?answer=3D5" style=3D"color:#6E0AD6;text-decoration:none;font-fami=
+ly:Verdana, 'Helvetica Neue', HelveticaNeue, Helvetica, Arial, sans-serif">=
+<img src=3D"https://static.olx.com.br/nu/email/images/png/icon-star-avaliat=
+ion-lead.png" style=3D"width:24px;height:24px;margin:0 4px"/></a></td><td s=
+tyle=3D"font-size:14px;color:#5E6A82;font-weight:400;padding-top:8px">Alto<=
+/td></tr></tbody></table><div style=3D"padding-top:60px"></div><div style=
+=3D"display:flex;margin-bottom:16px"><p style=3D"text-align:center;margin:0=
+;padding:0;color:#323232;line-height:24px;font-family:Roboto, sans-serif;fo=
+nt-weight:bold;font-size:18px;text-transform:uppercase;margin-top:6px" titl=
+e=3D"lead-name">Larissa</p><div style=3D"background-color:#EAD9FF;border-ra=
+dius:8px;color:#34006B;margin-left:20px;padding:5px 10px;display:flex;font-=
+family:Roboto, sans-serif;font-size:14px"><img src=3D"https://static.olx.co=
+m.br/nu/email/images/png/ic-fire.png" style=3D"margin-top:4px" width=3D"16"=
+ height=3D"16"/><p style=3D"text-align:center;margin:0;padding:0;color:#340=
+06B;line-height:24px;font-family:Verdana, 'Helvetica Neue', HelveticaNeue, =
+Helvetica, Arial, sans-serif;margin-left:5px" title=3D"lead-score">66.0% de=
+ chances de fechar neg=C3=B3cio</p></div></div><p style=3D"text-align:left;=
+margin:20px 0;padding:0;color:#323232;line-height:20px;font-family:Roboto, =
+sans-serif;font-size:14px">Ol=C3=A1! Voc=C3=AA tem uma nova visualiza=C3=A7=
+=C3=A3o de WhatsApp.</p></div><div style=3D"font-family:Verdana, 'Helvetica=
+ Neue', HelveticaNeue, Helvetica, Arial, sans-serif;margin:0 0 20px 0;paddi=
+ng:0 20px"><p style=3D"text-align:left;margin:0;padding:0;color:#3C4453;lin=
+e-height:24px;font-family:Roboto, sans-serif;font-weight:bold;font-size:16p=
+x;margin-bottom:24px">Sobre o cliente</p><div style=3D"display:flex;margin-=
+bottom:16px"><img src=3D"https://static.olx.com.br/nu/email/images/png/icon=
+-client.png" width=3D"80" height=3D"80"/><div style=3D"margin-left:8px"><p =
+style=3D"text-align:left;margin:0;padding:0;color:#3C4453;line-height:24px;=
+font-family:Roboto, sans-serif;margin-bottom:10px;font-size:16px" title=3D"=
+lead-phoneNumber">(11) 94474-6202</p><p style=3D"text-align:left;margin:0;p=
+adding:0;color:#3C4453;line-height:24px;font-family:Roboto, sans-serif;marg=
+in-bottom:10px;font-size:16px" title=3D"lead-email">labgnsidns@hotmail.com<=
+/p></div></div></div><div style=3D"font-family:Verdana, 'Helvetica Neue', H=
+elveticaNeue, Helvetica, Arial, sans-serif;margin:0 0 20px 0;padding:0 20px=
+"><div style=3D"display:flex;margin-bottom:16px"><img src=3D"https://static=
+.olx.com.br/nu/email/images/png/icon-person-notebook.png" style=3D"margin-t=
+op:15px" width=3D"76" height=3D"50"/><div style=3D"text-align:left;margin-b=
+ottom:10px;color:#3C4453;font-size:16px;font-family:Roboto, sans-serif"><ul=
+ style=3D"padding:0 25px;margin:0 0 5px"><li style=3D"font-size:14px;color:=
+#3C4453;line-height:24px;font-family:Roboto, sans-serif" title=3D"history-t=
+imeLine">Iniciou sua busca h=C3=A1 1 semana nos portais</li><li style=3D"fo=
+nt-size:14px;color:#3C4453;line-height:24px;font-family:Roboto, sans-serif"=
+ title=3D"history-neighborhoods">Possui interesse pelos bairros Perdizes e =
+Vila Mariana</li></ul><a href=3D"https://canal-pro.grupozap.com/ZAP_OLX/0/g=
+estor-de-leads/history/1e576b9c-9961-4be5-8826-dbd89fbbb1f1" style=3D"color=
+:#3C4453;text-decoration:underline;font-family:Roboto, sans-serif;font-size=
+:14px;font-weight:bold;padding-left:25px;margin-top:5px">Saiba mais sobre o=
+ lead no CanalPro</a></div></div></div><div style=3D"font-family:Verdana, '=
+Helvetica Neue', HelveticaNeue, Helvetica, Arial, sans-serif;margin:0 0 20p=
+x 0;text-align:left;padding:0 20px"><p style=3D"text-align:left;margin:0;pa=
+dding:0;color:#3C4453;line-height:24px;font-family:Roboto, sans-serif;font-=
+weight:bold;font-size:16px;margin-bottom:24px">Dados do im=C3=B3vel</p><img=
+ src=3D"https://resizedimgs.zapimoveis.com.br/img/vr-listing/19bb65f458dd9a=
+59493b0bd1d815f424/photo.jpg?action=3Dcrop&amp;dimension=3D400x180" alt=3D"=
+Imagem do an=C3=BAncio" title=3D"listing-image" style=3D"width:100%;height:=
+200px;border-radius:8px"/><br/><p style=3D"text-align:center;margin:0;paddi=
+ng:2px 8px;color:#14596B;line-height:24px;font-family:Roboto, sans-serif;ba=
+ckground-color:#E3F2FD;border-radius:8px;display:inline-block;margin-top:16=
+px;margin-bottom:16px;font-size:14px" title=3D"listing-externalCode">C=C3=
+=93D. AP14150_SKY</p><p style=3D"text-align:left;margin:0;padding:0;color:#=
+3C4453;line-height:24px;font-family:Verdana, 'Helvetica Neue', HelveticaNeu=
+e, Helvetica, Arial, sans-serif;font-size:14px;font-weight:600" title=3D"li=
+sting-neighborhood">Perdizes</p><p style=3D"text-align:left;margin:0;paddin=
+g:0;color:#3C4453;line-height:24px;font-family:Roboto, sans-serif;font-size=
+:14px" title=3D"listing-address">Rua Aimber=C3=AA 206 - Perdizes, S=C3=A3o =
+Paulo - S=C3=A3o Paulo</p><table style=3D"margin-top:8px"><tr><td><img src=
+=3D"https://static.olx.com.br/nu/email/images/png/area-grey.png" width=3D"2=
+4" height=3D"24"/></td><td style=3D"padding-right:32px"><p style=3D"text-al=
+ign:center;margin:0;padding:0;color:#5E6A82;line-height:16px;font-family:Ro=
+boto, sans-serif;font-size:14px;margin-bottom:6px">36 m=C2=B2</p></td><td><=
+img src=3D"https://static.olx.com.br/nu/email/images/png/bedroom-grey.png" =
+width=3D"24" height=3D"24"/></td><td style=3D"padding-right:32px"><p style=
+=3D"text-align:center;margin:0;padding:0;color:#5E6A82;line-height:16px;fon=
+t-family:Roboto, sans-serif;font-size:14px;margin-bottom:6px">1</p></td><td=
+><img src=3D"https://static.olx.com.br/nu/email/images/png/bathroom-grey.pn=
+g" width=3D"24" height=3D"24"/></td><td style=3D"padding-right:32px"><p sty=
+le=3D"text-align:center;margin:0;padding:0;color:#5E6A82;line-height:16px;f=
+ont-family:Roboto, sans-serif;font-size:14px;margin-bottom:6px">1</p></td><=
+td><img src=3D"https://static.olx.com.br/nu/email/images/png/parking-grey.p=
+ng" width=3D"24" height=3D"24"/></td><td><p style=3D"text-align:center;marg=
+in:0;padding:0;color:#5E6A82;line-height:16px;font-family:Roboto, sans-seri=
+f;font-size:14px;margin-bottom:6px">1</p></td></tr></table><p style=3D"text=
+-align:left;margin:0;padding:0;color:#3C4453;line-height:24px;font-family:R=
+oboto, sans-serif;font-size:16px;font-weight:bold" title=3D"listing-price">=
+Total R$=C2=A0575.000,00</p></div><a href=3D"https://www.zapmais.com.br/izi=
+?utm_source=3Demail&utm_medium=3Dtransactional&utm_source_pl[=E2=80=A6]mona=
+ka&utm_campaign=3Dnovolead-izi_em_tr_po_sv_ao_cr_re_go_cr" style=3D"color:#=
+6E0AD6;text-decoration:none;font-family:Verdana, 'Helvetica Neue', Helvetic=
+aNeue, Helvetica, Arial, sans-serif"><img src=3D"https://static.olx.com.br/=
+nu/email/images/png/BannerIzi.png"/></a><div style=3D"font-family:Verdana, =
+'Helvetica Neue', HelveticaNeue, Helvetica, Arial, sans-serif;margin:0 0 20=
+px 0;text-align:center;margin-top:20px;padding-bottom:20px;width:97%;border=
+-bottom:1px solid #e0e0e0"><p style=3D"text-align:center;margin:0;padding:0=
+;color:#3C4453;line-height:24px;font-family:Verdana, 'Helvetica Neue', Helv=
+eticaNeue, Helvetica, Arial, sans-serif;font-size:14px">Tamb=C3=A9m dispon=
+=C3=ADvel na palma da m=C3=A3o, atrav=C3=A9s do aplicativo Gest=C3=A3o Pro.=
+</p><table align=3D"center" width=3D"100%" cellpadding=3D"0" cellspacing=3D=
+"0" style=3D"margin-top:10px"><tr><td align=3D"center"><a href=3D"https://p=
+lay.google.com/store/apps/details?id=3Dcom.olxbr.proplus&hl=3Dpt&gl=3DUS" s=
+tyle=3D"color:#6E0AD6;text-decoration:none;font-family:Verdana, 'Helvetica =
+Neue', HelveticaNeue, Helvetica, Arial, sans-serif;margin-right:16px"><img =
+src=3D"https://static.olx.com.br/nu/email/images/png/google-play-badge.png"=
+ width=3D"125" height=3D"36"/></a><a href=3D"https://apps.apple.com/br/app/=
+gest%C3%A3o-pro-grupo-olx/id1670989914" style=3D"color:#6E0AD6;text-decorat=
+ion:none;font-family:Verdana, 'Helvetica Neue', HelveticaNeue, Helvetica, A=
+rial, sans-serif"><img src=3D"https://static.olx.com.br/nu/email/images/png=
+/app-store-badge.png" width=3D"125" height=3D"36"/></a></td></tr></table><p=
+ style=3D"text-align:center;margin:0;padding:0;color:#3C4453;line-height:24=
+px;font-family:Verdana, 'Helvetica Neue', HelveticaNeue, Helvetica, Arial, =
+sans-serif;font-size:12px;font-weight:400;padding-top:24px">Para saber quai=
+s e-mails recebem leads, acesse o <a href=3D"http://canal-pro.grupozap.com/=
+ZAP_OLX/0/integracoes/leads/email" style=3D"color:#3C4453;text-decoration:u=
+nderline;font-family:Verdana, 'Helvetica Neue', HelveticaNeue, Helvetica, A=
+rial, sans-serif;font-weight:bold">CanalPRO>Configura=C3=A7=C3=B5es>Integra=
+=C3=A7=C3=B5es de Leads e Im=C3=B3veis>Receber leads no e-mail.</a></p></di=
+v><div style=3D"font-family:Roboto, sans-serif;margin:0 0 20px 0;padding:25=
+px 0 40px;color:#3C4453;font-size:12px;font-weight:600;text-decoration:unde=
+rline"><a href=3D"https://ajuda.zapimoveis.com.br/s/article/termos-e-condic=
+oes-gerais-de-uso-zap" style=3D"color:#3C4453;text-decoration:underline;fon=
+t-family:Roboto, sans-serif;padding:25px 0 40px;font-size:12px;font-weight:=
+600">Termos de uso</a><div style=3D"width:5px;height:5px;border-radius:25px=
+;background-color:#3C4453;margin:2px 30px;display:inline-block"></div><a hr=
+ef=3D"https://www.zapimoveis.com.br/informacao/politica-de-privacidade/?itl=
+_id=3D1000126&itl_name=3Dzap_-_link-footer_politicas-de-privacidade_to_zap_=
+politicas-de-privacidade" style=3D"color:#3C4453;text-decoration:underline;=
+font-family:Roboto, sans-serif;padding:25px 0 40px;font-size:12px;font-weig=
+ht:600">Pol=C3=ADtica de privacidade</a><div style=3D"width:5px;height:5px;=
+border-radius:25px;background-color:#3C4453;margin:2px 30px;display:inline-=
+block"></div><a href=3D"https://ajuda.zapimoveis.com.br/s/tema/canal-pro" s=
+tyle=3D"color:#3C4453;text-decoration:underline;font-family:Roboto, sans-se=
+rif;padding:25px 0 40px;font-size:12px;font-weight:600">D=C3=BAvidas</a></d=
+iv></div></div>
+        </td>
+        </tr>
+    </table>
+    <img src=3D"https://email-redirect.olx.com.br/prod/open/v2/eyJhY2NvdW50=
+X2lkIjoiIiwiYWRfaWQiOiIiLCJidSI6IlpBUCIsImNhdGVnb3J5X2lkIjoiIiwiZXZlbnQiOiJ=
+OZXdMZWFkVjIiLCJwYXJhbWV0ZXJzIjpudWxsLCJwcm9jZXNzX2lkIjoiOTI5MzkyOWFhYjRkND=
+VhZDlkMGQwNTM1YjczN2RjODMiLCJ0ZWFtIjoiUkUgTWFya2V0cGxhY2UgQmFsYW5jZSIsInRvI=
+joieW9ndWVAZmx1eG9zLmNvIiwidXJsIjoiIn0.lVT7ZRJiGZjZcz1mf2wkRBxj_QDxT-ZNhvag=
+X0GsEso" height=3D"0" width=3D"0"></body>
+</html>
