@@ -6,6 +6,7 @@ import {
   useState,
   useEffect,
   useCallback,
+  useRef,
   ReactNode,
 } from "react";
 import { useRouter } from "next/navigation";
@@ -30,6 +31,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [is_loading, set_is_loading] = useState(true);
   const [feature_gate, set_feature_gate] = useState<FeatureGate | null>(null);
   const router = useRouter();
+  const has_checked = useRef(false);
 
   const refresh_user = useCallback(async () => {
     try {
@@ -56,6 +58,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
+    if (has_checked.current) return;
+    has_checked.current = true;
     refresh_user();
   }, [refresh_user]);
 
