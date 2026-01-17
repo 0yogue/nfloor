@@ -55,7 +55,7 @@ export default function LeadsPage() {
 
   return (
     <div className="h-[calc(100vh-4rem)] flex">
-      <div className="w-[25%] min-w-[280px] max-w-[400px] shrink-0">
+      <div className="w-[32%] min-w-[320px] max-w-[480px] shrink-0">
         <LeadList
           leads={leads}
           selected_lead={selected_lead}
