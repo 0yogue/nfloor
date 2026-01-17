@@ -46,12 +46,7 @@ export default function LoginPage() {
         </div>
 
         <Card className="border-border/50">
-          <CardHeader className="space-y-1">
-            <CardTitle className="text-xl">Entrar</CardTitle>
-            <CardDescription>
-              Digite suas credenciais para acessar o sistema
-            </CardDescription>
-          </CardHeader>
+         
           <CardContent>
             <form onSubmit={handle_submit} className="space-y-4">
               {error && (
