@@ -26,20 +26,6 @@ APP_USER="nfloor"
 
 echo -e "${YELLOW}Configurando para domínio: ${DOMAIN}${NC}"
 
-# 1. Atualizar sistema
-echo -e "${GREEN}[1/8] Atualizando sistema...${NC}"
-apt update && apt upgrade -y
-
-# 2. Instalar dependências
-echo -e "${GREEN}[2/8] Instalando dependências...${NC}"
-apt install -y curl git nginx certbot python3-certbot-nginx postgresql postgresql-contrib
-
-# 3. Instalar Node.js 20.x
-echo -e "${GREEN}[3/8] Instalando Node.js 20.x...${NC}"
-curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
-apt install -y nodejs
-npm install -g pm2
-
 # 4. Configurar PostgreSQL
 echo -e "${GREEN}[4/8] Configurando PostgreSQL...${NC}"
 sudo -u postgres psql << EOF
