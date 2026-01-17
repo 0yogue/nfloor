@@ -5,6 +5,64 @@ All notable changes to the NFloor project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.0] - 2026-01-17 - MVP1 Integrations & AI Temperature
+
+### Added
+
+#### WhatsApp Integration (Evolution API)
+- **Evolution API Client** (`src/lib/integrations/evolution-api.ts`):
+  - Create/delete WhatsApp instances
+  - QR Code connection flow
+  - Send text messages
+  - Webhook configuration for message events
+  
+- **WhatsApp APIs**:
+  - `GET/POST /api/integrations/whatsapp`: Manage WhatsApp connection
+  - `POST /api/integrations/whatsapp/webhook`: Receive messages/events
+
+- **WhatsAppConnection Component**: QR code scanner, connection status, profile info
+
+#### Email Integration Configuration
+- **EmailIntegration Component**: Toggle portals, custom filters
+- **Portal configs**: ZAP, VivaReal, OLX, ImovelWeb, QuintoAndar
+- **Custom filter support**: Filter by sender or subject patterns
+
+#### Integrations Page (`/integrations`)
+- Tabs for WhatsApp and Email configuration
+- Setup instructions and status indicators
+- Manager+ access level required
+
+#### AI-Driven Lead Temperature
+- **Temperature AI** (`src/lib/leads/temperature-ai.ts`):
+  - Recency score (last contact time)
+  - Engagement score (message frequency)
+  - Contact info score (phone/email availability)
+  - Portal score integration
+  - Priority calculation for call lists
+
+#### Call Today Feed
+- **CallTodayFeed Component**: Prioritized lead list
+- `GET /api/leads/priority`: AI-sorted leads to call
+- Rank badges, quick actions (call, WhatsApp)
+- Auto-refresh every 5 minutes
+
+#### Cooling Alerts
+- **CoolingAlerts Component**: Leads losing engagement
+- `GET /api/leads/cooling`: Leads that were hot/warm but no recent contact
+- Dismissible alerts, urgency indicators
+- Notification toggle
+
+### Changed
+- **Sidebar**: Added Integrações link (manager+)
+- **Lead components**: Exported CallTodayFeed and CoolingAlerts
+
+### Dependencies
+- Added `@radix-ui/react-switch`
+- Added `@radix-ui/react-scroll-area`
+- Added `@radix-ui/react-dialog`
+
+---
+
 ## [0.3.0] - 2026-01-17 - MVP1 WhatsApp Analytics
 
 ### Added

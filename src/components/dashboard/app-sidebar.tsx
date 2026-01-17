@@ -12,6 +12,7 @@ import {
   ChevronUp,
   Shield,
   UserCircle,
+  Link2,
 } from "lucide-react";
 import { useAuth } from "@/contexts/auth-context";
 import { SessionUser, ACCESS_LEVEL_LABELS, LICENSE_LABELS } from "@/types/rbac";
@@ -86,6 +87,12 @@ export function AppSidebar({ user }: AppSidebarProps) {
       url: "/dashboard/notifications",
       icon: Bell,
       visible: true,
+    },
+    {
+      title: "Integrações",
+      url: "/integrations",
+      icon: Link2,
+      visible: is_manager_or_higher(user.access_level),
     },
   ];
 
