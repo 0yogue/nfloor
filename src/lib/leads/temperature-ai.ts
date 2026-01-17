@@ -22,7 +22,6 @@ interface TemperatureResult {
     recency_score: number;
     engagement_score: number;
     contact_info_score: number;
-    portal_score: number;
   };
   recommendation: string;
   priority: number;
@@ -59,7 +58,6 @@ export function calculate_lead_temperature(lead: LeadFull): TemperatureResult {
       recency_score: Math.round(recency_score),
       engagement_score: Math.round(engagement_score),
       contact_info_score: Math.round(contact_info_score),
-      portal_score: Math.round(portal_score),
     },
     recommendation,
     priority,
