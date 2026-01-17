@@ -40,15 +40,13 @@ export function calculate_lead_temperature(lead: LeadFull): TemperatureResult {
   const days_since_creation = (now.getTime() - created_at.getTime()) / (1000 * 60 * 60 * 24);
 
   const recency_score = calculate_recency_score(hours_since_last_contact);
-  const engagement_score = calculate_engagement_score(lead.message_count, days_since_creation);
+  const engagement_score = calculate_engagement_score(lead.message_count || 0, days_since_creation);
   const contact_info_score = calculate_contact_info_score(!!lead.phone, !!lead.email);
-  const portal_score = lead.portal_score ?? 50;
 
   const total_score =
-    recency_score * 0.35 +
-    engagement_score * 0.25 +
-    contact_info_score * 0.15 +
-    portal_score * 0.25;
+    recency_score * 0.40 +
+    engagement_score * 0.30 +
+    contact_info_score * 0.30;
 
   const temperature = score_to_temperature(total_score);
   const recommendation = get_recommendation(temperature, hours_since_last_contact, lead);
