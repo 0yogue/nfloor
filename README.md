@@ -1,36 +1,99 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# NFloor - WhatsApp Analytics
 
-## Getting Started
+Sistema de gestão imobiliária com WhatsApp Analytics, RBAC e multi-tenancy.
 
-First, run the development server:
+## Stack Tecnológica
 
+- **Framework**: Next.js 16 (App Router)
+- **Database**: PostgreSQL + Prisma ORM
+- **Auth**: JWT com sessões persistentes
+- **UI**: shadcn/ui + Tailwind CSS
+- **RBAC**: Sistema de permissões por nível de acesso
+
+## Arquitetura RBAC
+
+### Níveis de Acesso (AccessLevel)
+| Nível | Visibilidade |
+|-------|-------------|
+| SUPER_ADMIN | Todas as empresas |
+| DIRECTOR | Toda a empresa |
+| SUPERINTENDENT | Áreas gerenciadas |
+| MANAGER | Áreas gerenciadas |
+| SELLER | Apenas próprios dados |
+
+### Tipos de Licença (LicenseType)
+| Licença | Features |
+|---------|----------|
+| BASIC | Dashboard básico, filtros simples |
+| PROFESSIONAL | + Filtros custom, analytics, export |
+| ENTERPRISE | + IA, API, white-label |
+
+## Setup
+
+### 1. Instalar dependências
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. Configurar ambiente
+```bash
+cp .env.example .env
+# Edite o .env com suas configurações
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 3. Configurar banco de dados
+```bash
+npm run db:generate   # Gera o Prisma Client
+npm run db:push       # Aplica schema no banco
+npm run db:seed       # Popula dados de teste
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 4. Iniciar servidor
+```bash
+npm run dev
+```
 
-## Learn More
+## Credenciais de Teste
 
-To learn more about Next.js, take a look at the following resources:
+| Usuário | Email | Senha |
+|---------|-------|-------|
+| Super Admin | admin@nfloor.com | 123456 |
+| Diretor | diretor@demo.com | 123456 |
+| Superintendente | superintendente@demo.com | 123456 |
+| Gerente | gerente@demo.com | 123456 |
+| Vendedor 1 | vendedor1@demo.com | 123456 |
+| Vendedor 2 | vendedor2@demo.com | 123456 |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Scripts Disponíveis
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+npm run dev          # Servidor de desenvolvimento
+npm run build        # Build de produção
+npm run start        # Servidor de produção
+npm run lint         # Linting
+npm run db:generate  # Gera Prisma Client
+npm run db:push      # Aplica schema
+npm run db:migrate   # Cria migration
+npm run db:seed      # Popula banco
+npm run db:studio    # Prisma Studio
+npm run db:reset     # Reset completo do banco
+```
 
-## Deploy on Vercel
+## Estrutura de Pastas
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```
+src/
+├── app/
+│   ├── (auth)/          # Rotas de autenticação
+│   ├── (dashboard)/     # Rotas protegidas
+│   └── api/             # API routes
+├── components/
+│   ├── ui/              # shadcn/ui components
+│   └── dashboard/       # Componentes do dashboard
+├── contexts/            # React contexts
+├── lib/
+│   ├── auth/            # Lógica de autenticação
+│   ├── prisma/          # Prisma client
+│   └── rbac/            # Lógica de permissões
+└── types/               # TypeScript types
+```
