@@ -27,6 +27,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarTrigger,
 } from "@/components/ui/sidebar";
 import {
   DropdownMenu,
@@ -123,16 +124,19 @@ export function AppSidebar({ user }: AppSidebarProps) {
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader className="border-b border-sidebar-border">
-        <div className="flex items-center gap-3 px-2 py-3">
-          <div className="flex items-center justify-center w-9 h-9 rounded-lg bg-sidebar-primary">
-            <Building2 className="w-5 h-5 text-sidebar-primary-foreground" />
+        <div className="flex items-center justify-between px-2 py-3">
+          <div className="flex items-center gap-3">
+            <div className="flex items-center justify-center w-9 h-9 rounded-lg bg-sidebar-primary">
+              <Building2 className="w-5 h-5 text-sidebar-primary-foreground" />
+            </div>
+            <div className="flex flex-col group-data-[collapsible=icon]:hidden">
+              <span className="font-semibold text-sm">NFloor</span>
+              <span className="text-xs text-sidebar-foreground/60">
+                {user.company_name || "Sistema"}
+              </span>
+            </div>
           </div>
-          <div className="flex flex-col">
-            <span className="font-semibold text-sm">NFloor</span>
-            <span className="text-xs text-sidebar-foreground/60">
-              {user.company_name || "Sistema"}
-            </span>
-          </div>
+          <SidebarTrigger className="group-data-[collapsible=icon]:hidden" />
         </div>
       </SidebarHeader>
 
