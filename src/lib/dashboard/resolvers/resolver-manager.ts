@@ -60,10 +60,10 @@ export async function resolve_manager_dashboard(
     });
   }
   
-  // Sort by total activity (new + qualified + proposal + sold)
+  // Sort by total activity (lead + visit + proposal + sold)
   subordinates.sort((a, b) => {
-    const total_a = a.metrics.new_count + a.metrics.qualified_count + a.metrics.proposal_count + a.metrics.sold_count;
-    const total_b = b.metrics.new_count + b.metrics.qualified_count + b.metrics.proposal_count + b.metrics.sold_count;
+    const total_a = a.metrics.lead_count + a.metrics.visit_count + a.metrics.proposal_count + a.metrics.sold_count;
+    const total_b = b.metrics.lead_count + b.metrics.visit_count + b.metrics.proposal_count + b.metrics.sold_count;
     return total_b - total_a;
   });
   

@@ -1,5 +1,5 @@
 import { DashboardDataSource, get_date_range } from "./adapter";
-import { Lead, User, Area, DateFilter, LeadStatus, TeamMetrics, SellerRanking } from "./types";
+import { Lead, User, Area, DateFilter, LeadStatus, LeadSource, TeamMetrics, SellerRanking } from "./types";
 import { AccessLevel } from "@/types/rbac";
 import prisma from "@/lib/prisma/client";
 
@@ -7,10 +7,18 @@ export class PrismaDataSource implements DashboardDataSource {
   private map_lead(db_lead: {
     id: string;
     name: string;
+    first_name?: string | null;
+    last_name?: string | null;
     phone: string | null;
     email: string | null;
     status: string;
+    source?: string | null;
     notes: string | null;
+    company_name?: string | null;
+    job_title?: string | null;
+    website?: string | null;
+    hubspot_id?: string | null;
+    hubspot_synced_at?: Date | null;
     seller_id: string;
     area_id: string;
     company_id: string;
@@ -19,6 +27,14 @@ export class PrismaDataSource implements DashboardDataSource {
   }): Lead {
     return {
       ...db_lead,
+      first_name: db_lead.first_name || null,
+      last_name: db_lead.last_name || null,
+      source: (db_lead.source as LeadSource) || LeadSource.OTHER,
+      company_name: db_lead.company_name || null,
+      job_title: db_lead.job_title || null,
+      website: db_lead.website || null,
+      hubspot_id: db_lead.hubspot_id || null,
+      hubspot_synced_at: db_lead.hubspot_synced_at || null,
       status: db_lead.status as LeadStatus,
     };
   }

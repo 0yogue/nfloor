@@ -1,4 +1,4 @@
-import { Lead, User, Area, LeadStatus, Conversation, Message, PlaybookScore, TeamMetrics, SellerRanking } from "./types";
+import { Lead, User, Area, LeadStatus, LeadSource, Conversation, Message, PlaybookScore, TeamMetrics, SellerRanking } from "./types";
 import { AccessLevel, ConversationStatus, SenderType } from "@/types/rbac";
 
 const DEMO_COMPANY_ID = "demo_company_001";
@@ -93,8 +93,7 @@ export const MOCK_USERS: User[] = [
 function generate_leads(): Lead[] {
   const leads: Lead[] = [];
   const statuses: LeadStatus[] = [
-    LeadStatus.NEW,
-    LeadStatus.QUALIFIED,
+    LeadStatus.LEAD,
     LeadStatus.VISIT,
     LeadStatus.CALLBACK,
     LeadStatus.PROPOSAL,
@@ -102,12 +101,18 @@ function generate_leads(): Lead[] {
     LeadStatus.LOST,
   ];
   
-  const sellers = MOCK_USERS.filter(u => u.access_level === AccessLevel.SELLER);
-  const names = [
-    "Cliente Silva", "Cliente Santos", "Cliente Oliveira", "Cliente Souza",
-    "Cliente Lima", "Cliente Pereira", "Cliente Costa", "Cliente Ferreira",
-    "Cliente Almeida", "Cliente Rodrigues", "Cliente Gomes", "Cliente Martins",
+  const sources: LeadSource[] = [
+    LeadSource.WHATSAPP,
+    LeadSource.EMAIL,
+    LeadSource.WEBSITE,
+    LeadSource.BALCAO,
+    LeadSource.HUBSPOT,
+    LeadSource.ZAP_IMOVEIS,
   ];
+  
+  const sellers = MOCK_USERS.filter(u => u.access_level === AccessLevel.SELLER);
+  const first_names = ["João", "Maria", "Pedro", "Ana", "Carlos", "Lucia", "Fernando", "Patricia"];
+  const last_names = ["Silva", "Santos", "Oliveira", "Souza", "Lima", "Pereira", "Costa", "Ferreira"];
   
   let lead_counter = 1;
   
@@ -115,7 +120,6 @@ function generate_leads(): Lead[] {
     const area = MOCK_AREAS.find(a => a.id === seller.area_id);
     if (!area) continue;
     
-    // Generate leads for last 30 days
     for (let days_ago = 0; days_ago < 30; days_ago++) {
       const leads_per_day = Math.floor(Math.random() * 4) + 1;
       
@@ -124,7 +128,7 @@ function generate_leads(): Lead[] {
         created_at.setDate(created_at.getDate() - days_ago);
         created_at.setHours(Math.floor(Math.random() * 12) + 8);
         
-        const status_weights = [0.20, 0.15, 0.12, 0.13, 0.15, 0.10, 0.15];
+        const status_weights = [0.30, 0.15, 0.15, 0.15, 0.12, 0.13];
         const random = Math.random();
         let cumulative = 0;
         let status_index = 0;
@@ -136,13 +140,25 @@ function generate_leads(): Lead[] {
           }
         }
         
+        const first_name = first_names[Math.floor(Math.random() * first_names.length)];
+        const last_name = last_names[Math.floor(Math.random() * last_names.length)];
+        const source = sources[Math.floor(Math.random() * sources.length)];
+        
         leads.push({
           id: `lead_${lead_counter++}`,
-          name: names[Math.floor(Math.random() * names.length)],
+          name: `${first_name} ${last_name}`,
+          first_name,
+          last_name,
           phone: `(11) 9${Math.floor(Math.random() * 10000).toString().padStart(4, '0')}-${Math.floor(Math.random() * 10000).toString().padStart(4, '0')}`,
-          email: `cliente${lead_counter}@email.com`,
+          email: `${first_name.toLowerCase()}.${last_name.toLowerCase()}${lead_counter}@email.com`,
           status: statuses[status_index],
+          source,
           notes: null,
+          company_name: null,
+          job_title: null,
+          website: null,
+          hubspot_id: null,
+          hubspot_synced_at: null,
           seller_id: seller.id,
           area_id: area.id,
           company_id: area.company_id,

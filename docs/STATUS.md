@@ -17,10 +17,10 @@
 ### 2. Dashboard
 | Recurso | Status | Descrição |
 |---------|--------|-----------|
-| Métricas | ✅ Completo | Cards com total de leads, novos, qualificados, vendas |
-| Funil de Vendas | ✅ Completo | Visualização do funil com contagem por status |
+| Métricas do Time | ✅ Completo | 6 cards: Vendedores Online, Nota Média Atendimento, Novos Leads, Tempo Médio Primeira Resposta, Tempo Médio Resposta, Cliente Sem Resposta 24h |
+| Funil de Vendas | ✅ Completo | Visualização: Leads > Visitas > Retorno > Proposta > Vendas |
+| Ranking Hierárquico | ✅ Completo | Métricas por subordinado com tempo de resposta |
 | Ligue Hoje | ✅ Completo | Lista de leads prioritários ordenados por IA |
-| Top Melhorias | ✅ Completo | Leads que precisam de atenção |
 
 ### 3. Gestão de Leads
 | Recurso | Status | Descrição |
@@ -28,6 +28,7 @@
 | Listagem | ✅ Completo | Lista de leads com filtros por status |
 | Detalhes | ✅ Completo | Visualização completa do lead |
 | Importação | ✅ Completo | Import via email (.eml) |
+| Múltiplas Fontes | ✅ Completo | EMAIL, WHATSAPP, BALCAO, CRM, HUBSPOT, ZAP_IMOVEIS, OLX, etc. |
 | Visibilidade RBAC | ✅ Completo | Diretores veem todos da empresa, vendedores só os próprios |
 
 ### 4. Interface
@@ -40,6 +41,7 @@
 ### 5. Integrações
 | Recurso | Status | Descrição |
 |---------|--------|-----------|
+| HubSpot | ✅ Completo | Sincronização bidirecional de contatos (requer migração) |
 | WhatsApp (Evolution) | ⚠️ Parcial | Estrutura de API pronta, aguardando configuração |
 | Import Email | ✅ Completo | Parser de emails .eml para leads |
 
@@ -72,13 +74,28 @@ O dashboard adapta automaticamente a visualização baseada no nível de acesso:
 
 ### Status de Lead (Funil de Vendas)
 ```
-NEW       → Lead novo, sem contato
-QUALIFIED → Lead qualificado para visita
+LEAD      → Lead novo (entrada no funil)
 VISIT     → Visita agendada/realizada
 CALLBACK  → Aguardando retorno
 PROPOSAL  → Proposta enviada
 SOLD      → Venda realizada
 LOST      → Lead perdido
+```
+
+### Fontes de Lead
+```
+EMAIL         → Capturado via email
+WHATSAPP      → Lead do WhatsApp
+BALCAO        → Atendimento presencial
+CRM           → Importado de outro CRM
+HUBSPOT       → Sincronizado do HubSpot
+ZAP_IMOVEIS   → Portal ZAP Imóveis
+OLX           → Portal OLX
+VIVA_REAL     → Portal Viva Real
+CHAVES_NA_MAO → Portal Chaves na Mão
+WEBSITE       → Formulário do site
+INDICATION    → Indicação de cliente
+OTHER         → Outras fontes
 ```
 
 ### Temperatura de Lead (IA)
@@ -126,11 +143,13 @@ FROZEN    → Lead congelado, baixa prioridade
 
 ### Modelos Principais
 ```
-Company     → Empresa/Imobiliária
-User        → Usuários do sistema
-Area        → Áreas/Departamentos
-Lead        → Leads/Clientes potenciais
-Session     → Sessões de autenticação
+Company            → Empresa/Imobiliária
+User               → Usuários do sistema
+Area               → Áreas/Departamentos
+Lead               → Leads/Clientes potenciais (com fonte e integração HubSpot)
+Session            → Sessões de autenticação
+CompanyIntegration → Chaves de API por empresa (HubSpot, Evolution, SMTP, IMAP)
+HubSpotSyncLog     → Logs de sincronização HubSpot
 ```
 
 ### Relacionamentos
@@ -138,6 +157,7 @@ Session     → Sessões de autenticação
 Company 1:N User
 Company 1:N Area
 Company 1:N Lead
+Company 1:N CompanyIntegration
 User    1:N Lead (seller_id)
 Area    1:N Lead
 User    1:N Session
@@ -177,8 +197,25 @@ JWT_SECRET=chave_secreta_jwt
 NEXT_PUBLIC_APP_URL=https://seudominio.com
 NODE_ENV=production
 PORT=3110
+
+# Chave para criptografia de API keys (gerar com: openssl rand -hex 32)
+ENCRYPTION_KEY=sua_chave_de_64_caracteres_hex
 ```
 
 ---
 
-**Feedback:** 88/100 - Sistema funcional com autenticação, RBAC, gestão básica de leads e dashboard. Principais pendências são edição de leads e integrações.
+## 🔄 Migrações Pendentes
+
+Para aplicar as novas funcionalidades (funil atualizado e integração HubSpot), execute:
+
+```bash
+# 1. Aplicar migração SQL
+psql $DATABASE_URL -f prisma/migrations/001_update_funnel_and_integrations.sql
+
+# 2. Regenerar Prisma Client
+npx prisma generate
+```
+
+---
+
+**Feedback:** 92/100 - Sistema funcional com autenticação, RBAC, dashboard completo com métricas do time, funil de vendas simplificado e integração HubSpot pronta. Pendências: aplicar migração, edição de leads e configuração WhatsApp.

@@ -15,8 +15,7 @@ import { cn } from "@/lib/utils";
 import { Clock, User, Building2, UserCog, Briefcase, Phone, Mail } from "lucide-react";
 
 interface LeadMetrics {
-  new_count: number;
-  qualified_count: number;
+  lead_count: number;
   visit_count: number;
   callback_count: number;
   proposal_count: number;
@@ -54,28 +53,28 @@ const MOCK_SUBORDINATES: SubordinateData[] = [
     id: "mock_1",
     name: "Carlos Mendes (Zona Sul)",
     type: "manager",
-    metrics: { new_count: 45, qualified_count: 32, visit_count: 18, callback_count: 12, proposal_count: 8, sold_count: 5 },
+    metrics: { lead_count: 45, visit_count: 18, callback_count: 12, proposal_count: 8, sold_count: 5 },
     avg_response_time: 12,
   },
   {
     id: "mock_2",
     name: "Ana Paula (Zona Norte)",
     type: "manager",
-    metrics: { new_count: 38, qualified_count: 28, visit_count: 15, callback_count: 10, proposal_count: 6, sold_count: 4 },
+    metrics: { lead_count: 38, visit_count: 15, callback_count: 10, proposal_count: 6, sold_count: 4 },
     avg_response_time: 18,
   },
   {
     id: "mock_3",
     name: "Roberto Silva (Centro)",
     type: "manager",
-    metrics: { new_count: 52, qualified_count: 40, visit_count: 22, callback_count: 14, proposal_count: 10, sold_count: 7 },
+    metrics: { lead_count: 52, visit_count: 22, callback_count: 14, proposal_count: 10, sold_count: 7 },
     avg_response_time: 8,
   },
   {
     id: "mock_4",
     name: "Fernanda Costa (Zona Oeste)",
     type: "manager",
-    metrics: { new_count: 30, qualified_count: 22, visit_count: 12, callback_count: 8, proposal_count: 5, sold_count: 3 },
+    metrics: { lead_count: 30, visit_count: 12, callback_count: 8, proposal_count: 5, sold_count: 3 },
     avg_response_time: 25,
   },
 ];
@@ -85,21 +84,21 @@ const MOCK_SELLER_SUBORDINATES: SubordinateData[] = [
     id: "seller_1",
     name: "João Santos",
     type: "seller",
-    metrics: { new_count: 18, qualified_count: 12, visit_count: 8, callback_count: 5, proposal_count: 4, sold_count: 2 },
+    metrics: { lead_count: 18, visit_count: 8, callback_count: 5, proposal_count: 4, sold_count: 2 },
     avg_response_time: 10,
   },
   {
     id: "seller_2",
     name: "Maria Oliveira",
     type: "seller",
-    metrics: { new_count: 22, qualified_count: 15, visit_count: 10, callback_count: 6, proposal_count: 5, sold_count: 3 },
+    metrics: { lead_count: 22, visit_count: 10, callback_count: 6, proposal_count: 5, sold_count: 3 },
     avg_response_time: 8,
   },
   {
     id: "seller_3",
     name: "Pedro Lima",
     type: "seller",
-    metrics: { new_count: 15, qualified_count: 10, visit_count: 6, callback_count: 4, proposal_count: 3, sold_count: 2 },
+    metrics: { lead_count: 15, visit_count: 6, callback_count: 4, proposal_count: 3, sold_count: 2 },
     avg_response_time: 15,
   },
 ];
@@ -110,7 +109,7 @@ const MOCK_LEADS: LeadData[] = [
     name: "Maria Silva",
     phone: "(11) 99999-1234",
     email: "maria.silva@email.com",
-    status: "QUALIFIED",
+    status: "LEAD",
     notes: "Interessada em apartamento 3 quartos",
     created_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
     updated_at: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
@@ -150,7 +149,7 @@ const MOCK_LEADS: LeadData[] = [
     name: "Carla Souza",
     phone: "(11) 95555-7890",
     email: "carla.souza@email.com",
-    status: "NEW",
+    status: "LEAD",
     notes: "Novo lead do portal ZAP",
     created_at: new Date(),
     updated_at: new Date(),
@@ -172,8 +171,7 @@ function format_response_time(minutes: number): string {
 
 function get_status_color(status: string): string {
   const colors: Record<string, string> = {
-    NEW: "bg-blue-100 text-blue-700",
-    QUALIFIED: "bg-cyan-100 text-cyan-700",
+    LEAD: "bg-blue-100 text-blue-700",
     VISIT: "bg-purple-100 text-purple-700",
     CALLBACK: "bg-amber-100 text-amber-700",
     PROPOSAL: "bg-orange-100 text-orange-700",
@@ -185,8 +183,7 @@ function get_status_color(status: string): string {
 
 function get_status_label(status: string): string {
   const labels: Record<string, string> = {
-    NEW: "Novo",
-    QUALIFIED: "Qualificado",
+    LEAD: "Lead",
     VISIT: "Visita",
     CALLBACK: "Retorno",
     PROPOSAL: "Proposta",
@@ -267,8 +264,7 @@ function SubordinatesRankingTable({ subordinates }: { subordinates: SubordinateD
         <TableRow>
           <TableHead>Nome</TableHead>
           <TableHead className="text-center">Tipo</TableHead>
-          <TableHead className="text-center">Novos</TableHead>
-          <TableHead className="text-center">Qualif.</TableHead>
+          <TableHead className="text-center">Leads</TableHead>
           <TableHead className="text-center">Visitas</TableHead>
           <TableHead className="text-center">Retorno</TableHead>
           <TableHead className="text-center">Proposta</TableHead>
@@ -285,8 +281,7 @@ function SubordinatesRankingTable({ subordinates }: { subordinates: SubordinateD
       <TableBody>
         {subordinates.map((sub) => {
           const total =
-            sub.metrics.new_count +
-            sub.metrics.qualified_count +
+            sub.metrics.lead_count +
             sub.metrics.visit_count +
             sub.metrics.callback_count +
             sub.metrics.proposal_count +
@@ -305,8 +300,7 @@ function SubordinatesRankingTable({ subordinates }: { subordinates: SubordinateD
                   {get_type_label(sub.type)}
                 </Badge>
               </TableCell>
-              <TableCell className="text-center">{sub.metrics.new_count}</TableCell>
-              <TableCell className="text-center">{sub.metrics.qualified_count}</TableCell>
+              <TableCell className="text-center">{sub.metrics.lead_count}</TableCell>
               <TableCell className="text-center">{sub.metrics.visit_count}</TableCell>
               <TableCell className="text-center">{sub.metrics.callback_count}</TableCell>
               <TableCell className="text-center">{sub.metrics.proposal_count}</TableCell>

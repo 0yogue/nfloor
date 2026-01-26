@@ -1,8 +1,7 @@
 import { AccessLevel, ConversationStatus, SenderType } from "@/types/rbac";
 
 export enum LeadStatus {
-  NEW = "NEW",
-  QUALIFIED = "QUALIFIED",
+  LEAD = "LEAD",
   VISIT = "VISIT",
   CALLBACK = "CALLBACK",
   PROPOSAL = "PROPOSAL",
@@ -10,9 +9,23 @@ export enum LeadStatus {
   LOST = "LOST",
 }
 
+export enum LeadSource {
+  EMAIL = "EMAIL",
+  WHATSAPP = "WHATSAPP",
+  BALCAO = "BALCAO",
+  CRM = "CRM",
+  HUBSPOT = "HUBSPOT",
+  ZAP_IMOVEIS = "ZAP_IMOVEIS",
+  OLX = "OLX",
+  VIVA_REAL = "VIVA_REAL",
+  CHAVES_NA_MAO = "CHAVES_NA_MAO",
+  WEBSITE = "WEBSITE",
+  INDICATION = "INDICATION",
+  OTHER = "OTHER",
+}
+
 export interface LeadMetrics {
-  new_count: number;
-  qualified_count: number;
+  lead_count: number;
   visit_count: number;
   callback_count: number;
   proposal_count: number;
@@ -81,10 +94,18 @@ export interface DateFilter {
 export interface Lead {
   id: string;
   name: string;
+  first_name: string | null;
+  last_name: string | null;
   phone: string | null;
   email: string | null;
   status: LeadStatus;
+  source: LeadSource;
   notes: string | null;
+  company_name: string | null;
+  job_title: string | null;
+  website: string | null;
+  hubspot_id: string | null;
+  hubspot_synced_at: Date | null;
   seller_id: string;
   area_id: string;
   company_id: string;

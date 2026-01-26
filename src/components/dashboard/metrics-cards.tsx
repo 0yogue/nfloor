@@ -1,11 +1,11 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Users, UserCheck, PhoneCall, FileText, TrendingUp } from "lucide-react";
+import { Users, Eye, PhoneCall, FileText, TrendingUp } from "lucide-react";
 
 interface LeadMetrics {
-  new_count: number;
-  qualified_count: number;
+  lead_count: number;
+  visit_count: number;
   callback_count: number;
   proposal_count: number;
   sold_count: number;
@@ -20,18 +20,18 @@ interface MetricsCardsProps {
 export function MetricsCards({ metrics, title, is_loading }: MetricsCardsProps) {
   const cards = [
     {
-      title: "Leads Novos",
-      value: metrics.new_count,
+      title: "Leads",
+      value: metrics.lead_count,
       icon: Users,
       color: "text-blue-500",
       bg_color: "bg-blue-500/10",
     },
     {
-      title: "Qualificados",
-      value: metrics.qualified_count,
-      icon: UserCheck,
-      color: "text-emerald-500",
-      bg_color: "bg-emerald-500/10",
+      title: "Visitas",
+      value: metrics.visit_count,
+      icon: Eye,
+      color: "text-purple-500",
+      bg_color: "bg-purple-500/10",
     },
     {
       title: "Retorno",
@@ -44,8 +44,8 @@ export function MetricsCards({ metrics, title, is_loading }: MetricsCardsProps) 
       title: "Proposta",
       value: metrics.proposal_count,
       icon: FileText,
-      color: "text-purple-500",
-      bg_color: "bg-purple-500/10",
+      color: "text-orange-500",
+      bg_color: "bg-orange-500/10",
     },
     {
       title: "Vendas",

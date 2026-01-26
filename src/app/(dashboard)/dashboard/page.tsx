@@ -20,8 +20,7 @@ import { SalesFunnel } from "@/components/dashboard/sales-funnel";
 import { HierarchicalRanking } from "@/components/dashboard/hierarchical-ranking";
 
 interface LeadMetrics {
-  new_count: number;
-  qualified_count: number;
+  lead_count: number;
   visit_count: number;
   callback_count: number;
   proposal_count: number;
@@ -158,8 +157,7 @@ export default function DashboardPage() {
   const date_range = get_date_range();
   
   const empty_metrics: LeadMetrics = {
-    new_count: 0,
-    qualified_count: 0,
+    lead_count: 0,
     visit_count: 0,
     callback_count: 0,
     proposal_count: 0,

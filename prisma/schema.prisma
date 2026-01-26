@@ -44,8 +44,9 @@ model Company {
   created_at         DateTime    @default(now())
   updated_at         DateTime    @updatedAt
 
-  areas Area[]
-  users User[]
+  areas        Area[]
+  users        User[]
+  integrations CompanyIntegration[]
 
   @@index([license_type])
   @@index([is_active])
@@ -121,8 +122,7 @@ model AreaManager {
 // ============================================================================
 
 enum LeadStatus {
-  NEW
-  QUALIFIED
+  LEAD
   VISIT
   CALLBACK
   PROPOSAL
@@ -130,23 +130,48 @@ enum LeadStatus {
   LOST
 }
 
+enum LeadSource {
+  EMAIL
+  WHATSAPP
+  BALCAO
+  CRM
+  HUBSPOT
+  ZAP_IMOVEIS
+  OLX
+  VIVA_REAL
+  CHAVES_NA_MAO
+  WEBSITE
+  INDICATION
+  OTHER
+}
+
 model Lead {
-  id          String     @id @default(cuid())
-  name        String
-  phone       String?
-  email       String?
-  status      LeadStatus @default(NEW)
-  notes       String?
-  seller_id   String
-  area_id     String
-  company_id  String
-  created_at  DateTime   @default(now())
-  updated_at  DateTime   @updatedAt
+  id                String      @id @default(cuid())
+  name              String
+  first_name        String?
+  last_name         String?
+  phone             String?
+  email             String?
+  status            LeadStatus  @default(LEAD)
+  source            LeadSource  @default(OTHER)
+  notes             String?
+  company_name      String?
+  job_title         String?
+  website           String?
+  hubspot_id        String?
+  hubspot_synced_at DateTime?
+  seller_id         String
+  area_id           String
+  company_id        String
+  created_at        DateTime    @default(now())
+  updated_at        DateTime    @updatedAt
 
   @@index([seller_id])
   @@index([area_id])
   @@index([company_id])
   @@index([status])
+  @@index([source])
+  @@index([hubspot_id])
   @@index([created_at])
 }
 
@@ -267,4 +292,58 @@ model Playbook {
 
   @@index([company_id])
   @@index([is_active])
+}
+
+// ============================================================================
+// COMPANY_INTEGRATION - API keys and integration settings per company
+// ============================================================================
+
+enum IntegrationType {
+  HUBSPOT
+  EVOLUTION_API
+  SMTP
+  IMAP
+}
+
+model CompanyIntegration {
+  id           String          @id @default(cuid())
+  company_id   String
+  type         IntegrationType
+  name         String
+  api_key      String?
+  api_url      String?
+  config       Json            @default("{}")
+  is_active    Boolean         @default(true)
+  last_sync_at DateTime?
+  sync_error   String?
+  created_at   DateTime        @default(now())
+  updated_at   DateTime        @updatedAt
+
+  company Company @relation(fields: [company_id], references: [id], onDelete: Cascade)
+
+  @@unique([company_id, type])
+  @@index([company_id])
+  @@index([type])
+}
+
+// ============================================================================
+// HUBSPOT_SYNC_LOG - Tracking sync operations with HubSpot
+// ============================================================================
+
+model HubSpotSyncLog {
+  id                String    @id @default(cuid())
+  company_id        String
+  direction         String    // 'IMPORT' or 'EXPORT'
+  entity_type       String    // 'CONTACT', 'DEAL', etc.
+  records_processed Int       @default(0)
+  records_created   Int       @default(0)
+  records_updated   Int       @default(0)
+  records_failed    Int       @default(0)
+  error_details     Json?
+  started_at        DateTime  @default(now())
+  completed_at      DateTime?
+  status            String    @default("RUNNING") // 'RUNNING', 'COMPLETED', 'FAILED'
+
+  @@index([company_id])
+  @@index([started_at])
 }

@@ -2,8 +2,7 @@ import { Lead, LeadMetrics, LeadStatus, TeamMetrics } from "./types";
 
 export function calculate_metrics(leads: Lead[]): LeadMetrics {
   return {
-    new_count: leads.filter(l => l.status === LeadStatus.NEW).length,
-    qualified_count: leads.filter(l => l.status === LeadStatus.QUALIFIED).length,
+    lead_count: leads.filter(l => l.status === LeadStatus.LEAD).length,
     visit_count: leads.filter(l => l.status === LeadStatus.VISIT).length,
     callback_count: leads.filter(l => l.status === LeadStatus.CALLBACK).length,
     proposal_count: leads.filter(l => l.status === LeadStatus.PROPOSAL).length,
@@ -14,21 +13,19 @@ export function calculate_metrics(leads: Lead[]): LeadMetrics {
 export function sum_metrics(metrics_list: LeadMetrics[]): LeadMetrics {
   return metrics_list.reduce(
     (acc, m) => ({
-      new_count: acc.new_count + m.new_count,
-      qualified_count: acc.qualified_count + m.qualified_count,
+      lead_count: acc.lead_count + m.lead_count,
       visit_count: acc.visit_count + m.visit_count,
       callback_count: acc.callback_count + m.callback_count,
       proposal_count: acc.proposal_count + m.proposal_count,
       sold_count: acc.sold_count + m.sold_count,
     }),
-    { new_count: 0, qualified_count: 0, visit_count: 0, callback_count: 0, proposal_count: 0, sold_count: 0 }
+    { lead_count: 0, visit_count: 0, callback_count: 0, proposal_count: 0, sold_count: 0 }
   );
 }
 
 export function empty_metrics(): LeadMetrics {
   return {
-    new_count: 0,
-    qualified_count: 0,
+    lead_count: 0,
     visit_count: 0,
     callback_count: 0,
     proposal_count: 0,
