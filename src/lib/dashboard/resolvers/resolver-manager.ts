@@ -33,6 +33,16 @@ export async function resolve_manager_dashboard(
   const users = await data_source.get_users_by_areas(area_ids);
   const sellers = users.filter(u => u.access_level === AccessLevel.SELLER);
   
+  // Get team metrics and seller ranking first to get avg_response_time
+  const seller_ids = sellers.map(s => s.id);
+  const team_metrics = await data_source.get_team_metrics(seller_ids);
+  const seller_ranking = await data_source.get_seller_ranking(seller_ids);
+  
+  // Create a map of seller_id to avg_response_time from ranking
+  const response_time_map = new Map(
+    seller_ranking.map(r => [r.id, r.avg_response_time])
+  );
+  
   // Calculate metrics for each seller
   const subordinates: SubordinateMetrics[] = [];
   
@@ -46,6 +56,7 @@ export async function resolve_manager_dashboard(
       type: "seller",
       access_level: AccessLevel.SELLER,
       metrics,
+      avg_response_time: response_time_map.get(seller.id),
     });
   }
   
@@ -57,11 +68,6 @@ export async function resolve_manager_dashboard(
   });
   
   const total_metrics = sum_metrics(subordinates.map(s => s.metrics));
-  
-  // Get team metrics and seller ranking
-  const seller_ids = sellers.map(s => s.id);
-  const team_metrics = await data_source.get_team_metrics(seller_ids);
-  const seller_ranking = await data_source.get_seller_ranking(seller_ids);
   
   return {
     user_metrics: total_metrics,

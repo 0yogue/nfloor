@@ -3,6 +3,7 @@ import { AccessLevel, ConversationStatus, SenderType } from "@/types/rbac";
 export enum LeadStatus {
   NEW = "NEW",
   QUALIFIED = "QUALIFIED",
+  VISIT = "VISIT",
   CALLBACK = "CALLBACK",
   PROPOSAL = "PROPOSAL",
   SOLD = "SOLD",
@@ -12,6 +13,7 @@ export enum LeadStatus {
 export interface LeadMetrics {
   new_count: number;
   qualified_count: number;
+  visit_count: number;
   callback_count: number;
   proposal_count: number;
   sold_count: number;
@@ -24,6 +26,14 @@ export interface TeamMetrics {
   avg_response_time: number;
   avg_playbook_score: number;
   leads_without_response: number;
+  avg_attendance_score: number;
+  new_leads: number;
+  reactivated_conversations: number;
+  avg_first_response_time: number;
+  avg_weighted_response_time: number;
+  clients_no_response_2h: number;
+  clients_no_response_24h: number;
+  conversations_with_activity: number;
 }
 
 export interface SellerRanking {
@@ -45,6 +55,7 @@ export interface SubordinateMetrics {
   access_level?: AccessLevel;
   metrics: LeadMetrics;
   team_metrics?: TeamMetrics;
+  avg_response_time?: number;
 }
 
 export interface DashboardData {
@@ -53,6 +64,7 @@ export interface DashboardData {
   subordinates: SubordinateMetrics[];
   seller_ranking: SellerRanking[];
   total_metrics: LeadMetrics;
+  leads?: Lead[];
   period: {
     start: Date;
     end: Date;

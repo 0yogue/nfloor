@@ -23,12 +23,23 @@ export async function resolve_director_dashboard(
   }
   
   const company_users = await data_source.get_users_by_company(user.company_id);
-  const subordinates: SubordinateMetrics[] = [];
   
   // Check hierarchy: Superintendents > Managers > Sellers
   const superintendents = company_users.filter(u => u.access_level === AccessLevel.SUPERINTENDENT);
   const managers = company_users.filter(u => u.access_level === AccessLevel.MANAGER);
   const sellers = company_users.filter(u => u.access_level === AccessLevel.SELLER);
+  
+  // Get all seller IDs for team metrics first
+  const seller_ids = sellers.map(s => s.id);
+  const team_metrics = await data_source.get_team_metrics(seller_ids);
+  const seller_ranking = await data_source.get_seller_ranking(seller_ids);
+  
+  // Create response time map
+  const response_time_map = new Map(
+    seller_ranking.map(r => [r.id, r.avg_response_time])
+  );
+  
+  const subordinates: SubordinateMetrics[] = [];
   
   if (superintendents.length > 0) {
     // Show metrics grouped by superintendent
@@ -37,12 +48,18 @@ export async function resolve_director_dashboard(
       const leads = await data_source.get_leads_by_company(user.company_id, filter);
       const metrics = calculate_metrics(leads);
       
+      // Calculate avg response time for all sellers
+      const avg_response_time = seller_ranking.length > 0
+        ? seller_ranking.reduce((sum, r) => sum + r.avg_response_time, 0) / seller_ranking.length
+        : undefined;
+      
       subordinates.push({
         id: super_user.id,
         name: super_user.name,
         type: "superintendent",
         access_level: AccessLevel.SUPERINTENDENT,
         metrics,
+        avg_response_time,
       });
     }
   } else if (managers.length > 0) {
@@ -54,12 +71,20 @@ export async function resolve_director_dashboard(
       const leads = await data_source.get_leads_by_area(manager.area_id, filter);
       const metrics = calculate_metrics(leads);
       
+      // Get sellers in this manager's area and calculate avg response time
+      const area_sellers = sellers.filter(s => s.area_id === manager.area_id);
+      const area_seller_rankings = seller_ranking.filter(r => area_sellers.some(s => s.id === r.id));
+      const avg_response_time = area_seller_rankings.length > 0
+        ? area_seller_rankings.reduce((sum, r) => sum + r.avg_response_time, 0) / area_seller_rankings.length
+        : undefined;
+      
       subordinates.push({
         id: manager.id,
         name: `${manager.name}${area ? ` (${area.name})` : ""}`,
         type: "manager",
         access_level: AccessLevel.MANAGER,
         metrics,
+        avg_response_time,
       });
     }
   } else if (sellers.length > 0) {
@@ -74,6 +99,7 @@ export async function resolve_director_dashboard(
         type: "seller",
         access_level: AccessLevel.SELLER,
         metrics,
+        avg_response_time: response_time_map.get(seller.id),
       });
     }
   } else {
@@ -84,11 +110,19 @@ export async function resolve_director_dashboard(
       const leads = await data_source.get_leads_by_area(area.id, filter);
       const metrics = calculate_metrics(leads);
       
+      // Get sellers in this area and calculate avg response time
+      const area_sellers = sellers.filter(s => s.area_id === area.id);
+      const area_seller_rankings = seller_ranking.filter(r => area_sellers.some(s => s.id === r.id));
+      const avg_response_time = area_seller_rankings.length > 0
+        ? area_seller_rankings.reduce((sum, r) => sum + r.avg_response_time, 0) / area_seller_rankings.length
+        : undefined;
+      
       subordinates.push({
         id: area.id,
         name: area.name,
         type: "area",
         metrics,
+        avg_response_time,
       });
     }
   }
@@ -97,11 +131,6 @@ export async function resolve_director_dashboard(
   subordinates.sort((a, b) => b.metrics.sold_count - a.metrics.sold_count);
   
   const total_metrics = sum_metrics(subordinates.map(s => s.metrics));
-  
-  // Get all seller IDs for team metrics
-  const seller_ids = sellers.map(s => s.id);
-  const team_metrics = await data_source.get_team_metrics(seller_ids);
-  const seller_ranking = await data_source.get_seller_ranking(seller_ids);
   
   return {
     user_metrics: total_metrics,

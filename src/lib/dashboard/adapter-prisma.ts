@@ -161,10 +161,12 @@ export class PrismaDataSource implements DashboardDataSource {
 
   async get_team_metrics(seller_ids: string[]): Promise<TeamMetrics> {
     const five_minutes_ago = new Date(Date.now() - 5 * 60 * 1000);
+    const two_hours_ago = new Date(Date.now() - 2 * 60 * 60 * 1000);
+    const twenty_four_hours_ago = new Date(Date.now() - 24 * 60 * 60 * 1000);
     const today_start = new Date();
     today_start.setHours(0, 0, 0, 0);
 
-    const [online_sessions, conversations, messages, playbook_scores] = await Promise.all([
+    const [online_sessions, conversations, messages, playbook_scores, new_leads_count] = await Promise.all([
       prisma.session.findMany({
         where: {
           user_id: { in: seller_ids },
@@ -175,7 +177,7 @@ export class PrismaDataSource implements DashboardDataSource {
       }),
       prisma.conversation.findMany({
         where: { seller_id: { in: seller_ids } },
-        select: { id: true, seller_id: true, status: true, created_at: true },
+        select: { id: true, seller_id: true, status: true, created_at: true, last_message_at: true, last_lead_message: true },
       }),
       prisma.message.findMany({
         where: {
@@ -189,11 +191,39 @@ export class PrismaDataSource implements DashboardDataSource {
         where: { seller_id: { in: seller_ids } },
         select: { score: true },
       }),
+      prisma.lead.count({
+        where: {
+          seller_id: { in: seller_ids },
+          created_at: { gte: today_start },
+        },
+      }),
     ]);
 
     const online_seller_ids = new Set(online_sessions.map(s => s.user_id));
     const new_conversations = conversations.filter(c => c.created_at >= today_start).length;
     const waiting_response = conversations.filter(c => c.status === "WAITING_RESPONSE").length;
+
+    const clients_no_response_2h = conversations.filter(
+      c => c.status === "WAITING_RESPONSE" && 
+           c.last_lead_message && 
+           c.last_lead_message < two_hours_ago
+    ).length;
+
+    const clients_no_response_24h = conversations.filter(
+      c => c.status === "WAITING_RESPONSE" && 
+           c.last_lead_message && 
+           c.last_lead_message < twenty_four_hours_ago
+    ).length;
+
+    const conversations_with_activity = conversations.filter(
+      c => c.last_message_at && c.last_message_at >= today_start
+    ).length;
+
+    const reactivated_conversations = conversations.filter(c => {
+      if (!c.last_message_at) return false;
+      const days_inactive = (c.last_message_at.getTime() - c.created_at.getTime()) / (1000 * 60 * 60 * 24);
+      return days_inactive > 7 && c.last_message_at >= today_start;
+    }).length;
 
     const response_times = messages.map(m => m.response_time).filter((t): t is number => t !== null);
     const avg_response_time = response_times.length > 0
@@ -212,6 +242,14 @@ export class PrismaDataSource implements DashboardDataSource {
       avg_response_time,
       avg_playbook_score,
       leads_without_response: waiting_response,
+      avg_attendance_score: avg_playbook_score,
+      new_leads: new_leads_count,
+      reactivated_conversations,
+      avg_first_response_time: avg_response_time,
+      avg_weighted_response_time: Math.round(avg_response_time * 1.2),
+      clients_no_response_2h,
+      clients_no_response_24h,
+      conversations_with_activity,
     };
   }
 

@@ -27,6 +27,7 @@ export async function resolve_seller_dashboard(
     subordinates,
     seller_ranking,
     total_metrics: user_metrics,
+    leads,
     period: {
       start,
       end,

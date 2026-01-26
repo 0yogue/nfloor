@@ -3,11 +3,11 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { 
   Users, 
-  UserX, 
-  MessageSquarePlus, 
-  Clock, 
   Star, 
-  MessageSquareOff 
+  UserPlus,
+  Clock,
+  Timer,
+  UserX
 } from "lucide-react";
 import { TeamMetrics } from "@/lib/dashboard/types";
 
@@ -33,41 +33,54 @@ export function TeamMetricsCards({ metrics, is_loading }: TeamMetricsCardsProps)
       bg_color: "bg-green-500/10",
     },
     {
-      title: "Novas Conversas",
-      value: metrics.new_conversations,
-      icon: MessageSquarePlus,
+      title: "Nota Média Atendimento",
+      value: metrics.avg_attendance_score.toFixed(1),
+      is_text: true,
+      subtitle: `${metrics.new_conversations} novas conversas`,
+      icon: Star,
+      color: metrics.avg_attendance_score >= 8 ? "text-green-500" : metrics.avg_attendance_score >= 6 ? "text-amber-500" : "text-red-500",
+      bg_color: metrics.avg_attendance_score >= 8 ? "bg-green-500/10" : metrics.avg_attendance_score >= 6 ? "bg-amber-500/10" : "bg-red-500/10",
+    },
+    {
+      title: "Novos Leads",
+      value: metrics.new_leads,
+      subtitle: `${metrics.reactivated_conversations} conversas reativadas`,
+      icon: UserPlus,
       color: "text-blue-500",
       bg_color: "bg-blue-500/10",
     },
     {
-      title: "Tempo Médio Resposta",
-      value: format_response_time(metrics.avg_response_time),
+      title: "Tempo Médio de Primeira Resposta",
+      value: format_response_time(metrics.avg_first_response_time),
       is_text: true,
+      subtitle: "Tempo médio ponderado de resposta",
       icon: Clock,
-      color: metrics.avg_response_time <= 300 ? "text-green-500" : metrics.avg_response_time <= 600 ? "text-amber-500" : "text-red-500",
-      bg_color: metrics.avg_response_time <= 300 ? "bg-green-500/10" : metrics.avg_response_time <= 600 ? "bg-amber-500/10" : "bg-red-500/10",
+      color: metrics.avg_first_response_time <= 300 ? "text-green-500" : metrics.avg_first_response_time <= 600 ? "text-amber-500" : "text-red-500",
+      bg_color: metrics.avg_first_response_time <= 300 ? "bg-green-500/10" : metrics.avg_first_response_time <= 600 ? "bg-amber-500/10" : "bg-red-500/10",
     },
     {
-      title: "Nota Média Playbook",
-      value: metrics.avg_playbook_score.toFixed(1),
+      title: "Tempo Médio de Resposta",
+      value: format_response_time(metrics.avg_weighted_response_time),
       is_text: true,
-      icon: Star,
-      color: metrics.avg_playbook_score >= 8 ? "text-green-500" : metrics.avg_playbook_score >= 6 ? "text-amber-500" : "text-red-500",
-      bg_color: metrics.avg_playbook_score >= 8 ? "bg-green-500/10" : metrics.avg_playbook_score >= 6 ? "bg-amber-500/10" : "bg-red-500/10",
+      subtitle: `Taxa média ponderada de resposta • ${metrics.clients_no_response_2h} sem resposta +2h`,
+      icon: Timer,
+      color: metrics.avg_weighted_response_time <= 600 ? "text-green-500" : metrics.avg_weighted_response_time <= 1200 ? "text-amber-500" : "text-red-500",
+      bg_color: metrics.avg_weighted_response_time <= 600 ? "bg-green-500/10" : metrics.avg_weighted_response_time <= 1200 ? "bg-amber-500/10" : "bg-red-500/10",
     },
     {
-      title: "Sem Resposta",
-      value: metrics.leads_without_response,
-      icon: MessageSquareOff,
-      color: metrics.leads_without_response === 0 ? "text-green-500" : metrics.leads_without_response <= 5 ? "text-amber-500" : "text-red-500",
-      bg_color: metrics.leads_without_response === 0 ? "bg-green-500/10" : metrics.leads_without_response <= 5 ? "bg-amber-500/10" : "bg-red-500/10",
+      title: "Cliente Sem Resposta 24h",
+      value: metrics.clients_no_response_24h,
+      subtitle: `${metrics.conversations_with_activity} conversas com atividade no período`,
+      icon: UserX,
+      color: metrics.clients_no_response_24h === 0 ? "text-green-500" : metrics.clients_no_response_24h <= 5 ? "text-amber-500" : "text-red-500",
+      bg_color: metrics.clients_no_response_24h === 0 ? "bg-green-500/10" : metrics.clients_no_response_24h <= 5 ? "bg-amber-500/10" : "bg-red-500/10",
     },
   ];
 
   return (
     <div className="space-y-4">
       <h3 className="text-lg font-semibold text-muted-foreground">Métricas do Time</h3>
-      <div className="grid gap-4 grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
+      <div className="grid gap-4 grid-cols-2 md:grid-cols-3 lg:grid-cols-6">
         {cards.map((card) => (
           <Card key={card.title} className="relative overflow-hidden">
             <CardHeader className="flex flex-row items-center justify-between pb-2">

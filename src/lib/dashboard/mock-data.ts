@@ -95,6 +95,7 @@ function generate_leads(): Lead[] {
   const statuses: LeadStatus[] = [
     LeadStatus.NEW,
     LeadStatus.QUALIFIED,
+    LeadStatus.VISIT,
     LeadStatus.CALLBACK,
     LeadStatus.PROPOSAL,
     LeadStatus.SOLD,
@@ -123,7 +124,7 @@ function generate_leads(): Lead[] {
         created_at.setDate(created_at.getDate() - days_ago);
         created_at.setHours(Math.floor(Math.random() * 12) + 8);
         
-        const status_weights = [0.25, 0.20, 0.15, 0.15, 0.10, 0.15];
+        const status_weights = [0.20, 0.15, 0.12, 0.13, 0.15, 0.10, 0.15];
         const random = Math.random();
         let cumulative = 0;
         let status_index = 0;
@@ -283,6 +284,37 @@ export function get_team_metrics(seller_ids: string[]): TeamMetrics {
     c => c.status === ConversationStatus.WAITING_RESPONSE
   ).length;
   
+  const two_hours_ago = new Date(now.getTime() - 2 * 60 * 60 * 1000);
+  const twenty_four_hours_ago = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+  
+  const clients_no_response_2h = seller_conversations.filter(
+    c => c.status === ConversationStatus.WAITING_RESPONSE && 
+         c.last_lead_message && 
+         c.last_lead_message < two_hours_ago
+  ).length;
+  
+  const clients_no_response_24h = seller_conversations.filter(
+    c => c.status === ConversationStatus.WAITING_RESPONSE && 
+         c.last_lead_message && 
+         c.last_lead_message < twenty_four_hours_ago
+  ).length;
+  
+  const conversations_with_activity = seller_conversations.filter(
+    c => c.last_message_at && c.last_message_at >= today_start
+  ).length;
+  
+  const new_leads = MOCK_LEADS.filter(
+    l => seller_ids.includes(l.seller_id) && l.created_at >= today_start
+  ).length;
+  
+  const reactivated_conversations = seller_conversations.filter(c => {
+    if (!c.last_message_at) return false;
+    const last_activity = c.last_message_at;
+    const created = c.created_at;
+    const days_inactive = (last_activity.getTime() - created.getTime()) / (1000 * 60 * 60 * 24);
+    return days_inactive > 7 && last_activity >= today_start;
+  }).length;
+
   return {
     sellers_online,
     sellers_offline: sellers.length - sellers_online,
@@ -290,6 +322,14 @@ export function get_team_metrics(seller_ids: string[]): TeamMetrics {
     avg_response_time: Math.round(avg_response_time),
     avg_playbook_score: Math.round(avg_playbook_score * 10) / 10,
     leads_without_response,
+    avg_attendance_score: Math.round(avg_playbook_score * 10) / 10,
+    new_leads,
+    reactivated_conversations,
+    avg_first_response_time: Math.round(avg_response_time),
+    avg_weighted_response_time: Math.round(avg_response_time * 1.2),
+    clients_no_response_2h,
+    clients_no_response_24h,
+    conversations_with_activity,
   };
 }
 

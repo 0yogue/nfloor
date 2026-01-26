@@ -8,104 +8,21 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { CalendarIcon, Phone, RefreshCw } from "lucide-react";
+import { CalendarIcon, RefreshCw } from "lucide-react";
 import { format, subDays, startOfDay, endOfDay } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { DateRange } from "react-day-picker";
 import { ACCESS_LEVEL_LABELS, Feature, AccessLevel } from "@/types/rbac";
 import { cn } from "@/lib/utils";
-import { SubordinatesTable } from "@/components/dashboard/subordinates-table";
 import { TeamMetricsCards } from "@/components/dashboard/team-metrics-cards";
 import { SellerRankingTable } from "@/components/dashboard/seller-ranking";
 import { SalesFunnel } from "@/components/dashboard/sales-funnel";
-
-interface ImprovementSuggestion {
-  title: string;
-  description: string;
-  priority: "high" | "medium" | "low";
-}
-
-function get_improvement_suggestions(
-  metrics: LeadMetrics,
-  team_metrics?: TeamMetrics
-): ImprovementSuggestion[] {
-  const suggestions: ImprovementSuggestion[] = [];
-  
-  const total_leads = metrics.new_count + metrics.qualified_count + metrics.callback_count + metrics.proposal_count + metrics.sold_count;
-  const conversion_rate = total_leads > 0 ? (metrics.sold_count / metrics.new_count) * 100 : 0;
-  const qualification_rate = metrics.new_count > 0 ? (metrics.qualified_count / metrics.new_count) * 100 : 0;
-  const proposal_rate = metrics.qualified_count > 0 ? (metrics.proposal_count / metrics.qualified_count) * 100 : 0;
-  
-  if (metrics.new_count > 0 && qualification_rate < 30) {
-    suggestions.push({
-      title: "Baixa Taxa de Qualificação",
-      description: `Apenas ${qualification_rate.toFixed(0)}% dos novos leads são qualificados. Revise os critérios de entrada.`,
-      priority: "high",
-    });
-  }
-  
-  if (metrics.callback_count > metrics.qualified_count * 0.5) {
-    suggestions.push({
-      title: "Muitos Leads em Retorno",
-      description: `${metrics.callback_count} leads aguardando retorno. Priorize o follow-up.`,
-      priority: "high",
-    });
-  }
-  
-  if (team_metrics && team_metrics.leads_without_response > 0) {
-    suggestions.push({
-      title: "Leads Sem Resposta",
-      description: `${team_metrics.leads_without_response} leads ainda não foram contatados.`,
-      priority: "high",
-    });
-  }
-  
-  if (team_metrics && team_metrics.avg_response_time > 30) {
-    suggestions.push({
-      title: "Tempo de Resposta Alto",
-      description: `Média de ${team_metrics.avg_response_time} min. Meta: < 15 minutos.`,
-      priority: "medium",
-    });
-  }
-  
-  if (conversion_rate < 5 && metrics.new_count > 10) {
-    suggestions.push({
-      title: "Taxa de Conversão Baixa",
-      description: `Conversão de ${conversion_rate.toFixed(1)}%. Analise o funil de vendas.`,
-      priority: "medium",
-    });
-  }
-  
-  if (proposal_rate < 40 && metrics.qualified_count > 5) {
-    suggestions.push({
-      title: "Poucas Propostas Enviadas",
-      description: `Apenas ${proposal_rate.toFixed(0)}% dos qualificados recebem proposta.`,
-      priority: "medium",
-    });
-  }
-  
-  if (team_metrics && team_metrics.avg_playbook_score < 70) {
-    suggestions.push({
-      title: "Score de Playbook Baixo",
-      description: `Média de ${team_metrics.avg_playbook_score}%. Reforce treinamento.`,
-      priority: "low",
-    });
-  }
-  
-  if (suggestions.length === 0) {
-    suggestions.push({
-      title: "Métricas Saudáveis",
-      description: "Todas as métricas estão dentro do esperado. Continue o bom trabalho!",
-      priority: "low",
-    });
-  }
-  
-  return suggestions.slice(0, 5);
-}
+import { HierarchicalRanking } from "@/components/dashboard/hierarchical-ranking";
 
 interface LeadMetrics {
   new_count: number;
   qualified_count: number;
+  visit_count: number;
   callback_count: number;
   proposal_count: number;
   sold_count: number;
@@ -118,6 +35,14 @@ interface TeamMetrics {
   avg_response_time: number;
   avg_playbook_score: number;
   leads_without_response: number;
+  avg_attendance_score: number;
+  new_leads: number;
+  reactivated_conversations: number;
+  avg_first_response_time: number;
+  avg_weighted_response_time: number;
+  clients_no_response_2h: number;
+  clients_no_response_24h: number;
+  conversations_with_activity: number;
 }
 
 interface SellerRanking {
@@ -140,12 +65,24 @@ interface SubordinateMetrics {
   metrics: LeadMetrics;
 }
 
+interface Lead {
+  id: string;
+  name: string;
+  phone: string | null;
+  email: string | null;
+  status: string;
+  notes: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
 interface DashboardData {
   user_metrics: LeadMetrics;
   team_metrics: TeamMetrics;
   subordinates: SubordinateMetrics[];
   seller_ranking: SellerRanking[];
   total_metrics: LeadMetrics;
+  leads?: Lead[];
   period: {
     start: string;
     end: string;
@@ -223,6 +160,7 @@ export default function DashboardPage() {
   const empty_metrics: LeadMetrics = {
     new_count: 0,
     qualified_count: 0,
+    visit_count: 0,
     callback_count: 0,
     proposal_count: 0,
     sold_count: 0,
@@ -343,100 +281,60 @@ export default function DashboardPage() {
         />
       )}
 
-      {(dashboard_data?.subordinates?.length || 0) > 0 && (
-        <SubordinatesTable
-          subordinates={dashboard_data?.subordinates || []}
-          is_loading={is_loading}
-        />
-      )}
-
-      <div className="grid gap-4 lg:grid-cols-3">
+      <div className="grid gap-4 lg:grid-cols-2">
         <SalesFunnel
           metrics={dashboard_data?.total_metrics || empty_metrics}
           is_loading={is_loading}
         />
 
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-lg">Top Melhorias</CardTitle>
-            <CardDescription>Métricas que precisam de atenção</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-2">
-              {get_improvement_suggestions(dashboard_data?.total_metrics || empty_metrics, dashboard_data?.team_metrics).map((item, i) => (
-                <div
-                  key={i}
-                  className="flex items-center gap-2 p-2 rounded-lg border bg-card hover:bg-accent/50 transition-colors"
-                >
-                  <div
-                    className={cn(
-                      "w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-bold shrink-0",
-                      item.priority === "high" && "bg-red-500",
-                      item.priority === "medium" && "bg-amber-500",
-                      item.priority === "low" && "bg-blue-500"
-                    )}
-                  >
-                    {i + 1}
-                  </div>
-                  <div className="min-w-0">
-                    <p className="font-medium text-sm truncate">{item.title}</p>
-                    <p className="text-xs text-muted-foreground truncate">{item.description}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-lg">Ligue Hoje</CardTitle>
-            <CardDescription>
-              Leads prioritários ordenados por temperatura
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {[
-                { name: "Maria Silva", temp: "hot", last_contact: "2 dias", interest: "Apto 3 quartos" },
-                { name: "João Santos", temp: "hot", last_contact: "1 dia", interest: "Casa em condomínio" },
-                { name: "Ana Costa", temp: "warm", last_contact: "3 dias", interest: "Cobertura" },
-                { name: "Pedro Lima", temp: "warm", last_contact: "4 dias", interest: "Terreno" },
-                { name: "Carla Souza", temp: "cooling", last_contact: "5 dias", interest: "Apto 2 quartos" },
-              ].map((lead, i) => (
-                <div
-                  key={i}
-                  className="flex items-center justify-between p-3 rounded-lg border bg-card hover:bg-accent/50 transition-colors"
-                >
-                  <div className="flex items-center gap-3">
-                    <div
-                      className={cn(
-                        "w-2 h-2 rounded-full",
-                        lead.temp === "hot" && "bg-green-500",
-                        lead.temp === "warm" && "bg-yellow-500",
-                        lead.temp === "cooling" && "bg-orange-500"
-                      )}
-                    />
-                    <div>
-                      <p className="font-medium text-sm">{lead.name}</p>
-                      <p className="text-xs text-muted-foreground">{lead.interest}</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <div className="text-right">
-                      <p className="text-xs text-muted-foreground">Último contato</p>
-                      <p className="text-sm">{lead.last_contact}</p>
-                    </div>
-                    <Button size="sm" variant="ghost">
-                      <Phone className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+        <HierarchicalRanking
+          access_level={user.access_level}
+          subordinates={dashboard_data?.subordinates || []}
+          leads={dashboard_data?.leads as any}
+          is_loading={is_loading}
+        />
       </div>
+
+      {user.access_level !== AccessLevel.SELLER && (
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg">Atividades dos Vendedores</CardTitle>
+            <CardDescription>Resumo das atividades recentes da equipe</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+              <div className="flex flex-col gap-1 p-3 rounded-lg border bg-card">
+                <span className="text-xs text-muted-foreground">Ligações Realizadas</span>
+                <span className="text-2xl font-bold text-blue-500">
+                  {dashboard_data?.team_metrics?.new_conversations || 0}
+                </span>
+                <span className="text-xs text-muted-foreground">hoje</span>
+              </div>
+              <div className="flex flex-col gap-1 p-3 rounded-lg border bg-card">
+                <span className="text-xs text-muted-foreground">Visitas Agendadas</span>
+                <span className="text-2xl font-bold text-purple-500">
+                  {dashboard_data?.total_metrics?.visit_count || 0}
+                </span>
+                <span className="text-xs text-muted-foreground">no período</span>
+              </div>
+              <div className="flex flex-col gap-1 p-3 rounded-lg border bg-card">
+                <span className="text-xs text-muted-foreground">Propostas Enviadas</span>
+                <span className="text-2xl font-bold text-orange-500">
+                  {dashboard_data?.total_metrics?.proposal_count || 0}
+                </span>
+                <span className="text-xs text-muted-foreground">no período</span>
+              </div>
+              <div className="flex flex-col gap-1 p-3 rounded-lg border bg-card">
+                <span className="text-xs text-muted-foreground">Leads Sem Resposta</span>
+                <span className="text-2xl font-bold text-red-500">
+                  {dashboard_data?.team_metrics?.leads_without_response || 0}
+                </span>
+                <span className="text-xs text-muted-foreground">aguardando</span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }

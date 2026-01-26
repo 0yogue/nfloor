@@ -123,6 +123,7 @@ model AreaManager {
 enum LeadStatus {
   NEW
   QUALIFIED
+  VISIT
   CALLBACK
   PROPOSAL
   SOLD

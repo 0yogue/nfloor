@@ -14,6 +14,7 @@ interface SalesFunnelProps {
   metrics: {
     new_count: number;
     qualified_count: number;
+    visit_count: number;
     callback_count: number;
     proposal_count: number;
     sold_count: number;
@@ -25,6 +26,7 @@ export function SalesFunnel({ metrics, is_loading }: SalesFunnelProps) {
   const stages: FunnelStage[] = [
     { label: "Novos", count: metrics.new_count, color: "text-blue-600", bg_color: "bg-blue-500" },
     { label: "Qualificados", count: metrics.qualified_count, color: "text-cyan-600", bg_color: "bg-cyan-500" },
+    { label: "Visitas", count: metrics.visit_count, color: "text-purple-600", bg_color: "bg-purple-500" },
     { label: "Retorno", count: metrics.callback_count, color: "text-amber-600", bg_color: "bg-amber-500" },
     { label: "Proposta", count: metrics.proposal_count, color: "text-orange-600", bg_color: "bg-orange-500" },
     { label: "Vendidos", count: metrics.sold_count, color: "text-green-600", bg_color: "bg-green-500" },
@@ -113,7 +115,7 @@ export function SalesFunnel({ metrics, is_loading }: SalesFunnelProps) {
           })}
         </div>
 
-        <div className="mt-4 pt-4 border-t grid grid-cols-5 gap-2 text-center">
+        <div className="mt-4 pt-4 border-t grid grid-cols-6 gap-2 text-center">
           {stages.map((stage, index) => (
             <div key={`stat-${stage.label}`} className="space-y-1">
               <div className={cn("text-2xl font-bold", stage.color)}>

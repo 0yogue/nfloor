@@ -44,6 +44,13 @@ export async function resolve_superintendent_dashboard(
   const users = await data_source.get_users_by_areas(area_ids);
   const managers = users.filter(u => u.access_level === AccessLevel.MANAGER);
   
+  // Get all sellers in managed areas for team metrics first
+  const sellers = users.filter(u => u.access_level === AccessLevel.SELLER);
+  const seller_ids = sellers.map(s => s.id);
+  const team_metrics = await data_source.get_team_metrics(seller_ids);
+  const seller_ranking = await data_source.get_seller_ranking(seller_ids);
+  
+  // Calculate avg response time per area/manager
   const subordinates: SubordinateMetrics[] = [];
   
   if (managers.length > 0) {
@@ -55,12 +62,20 @@ export async function resolve_superintendent_dashboard(
       const leads = await data_source.get_leads_by_area(manager.area_id, filter);
       const metrics = calculate_metrics(leads);
       
+      // Get sellers in this manager's area and calculate avg response time
+      const area_sellers = sellers.filter(s => s.area_id === manager.area_id);
+      const area_seller_rankings = seller_ranking.filter(r => area_sellers.some(s => s.id === r.id));
+      const avg_response_time = area_seller_rankings.length > 0
+        ? area_seller_rankings.reduce((sum, r) => sum + r.avg_response_time, 0) / area_seller_rankings.length
+        : undefined;
+      
       subordinates.push({
         id: manager.id,
         name: `${manager.name}${area ? ` (${area.name})` : ""}`,
         type: "manager",
         access_level: AccessLevel.MANAGER,
         metrics,
+        avg_response_time,
       });
     }
   } else {
@@ -73,11 +88,19 @@ export async function resolve_superintendent_dashboard(
       const leads = await data_source.get_leads_by_area(area.id, filter);
       const metrics = calculate_metrics(leads);
       
+      // Get sellers in this area and calculate avg response time
+      const area_sellers = sellers.filter(s => s.area_id === area.id);
+      const area_seller_rankings = seller_ranking.filter(r => area_sellers.some(s => s.id === r.id));
+      const avg_response_time = area_seller_rankings.length > 0
+        ? area_seller_rankings.reduce((sum, r) => sum + r.avg_response_time, 0) / area_seller_rankings.length
+        : undefined;
+      
       subordinates.push({
         id: area.id,
         name: area.name,
         type: "area",
         metrics,
+        avg_response_time,
       });
     }
   }
@@ -86,12 +109,6 @@ export async function resolve_superintendent_dashboard(
   subordinates.sort((a, b) => b.metrics.sold_count - a.metrics.sold_count);
   
   const total_metrics = sum_metrics(subordinates.map(s => s.metrics));
-  
-  // Get all sellers in managed areas for team metrics
-  const sellers = users.filter(u => u.access_level === AccessLevel.SELLER);
-  const seller_ids = sellers.map(s => s.id);
-  const team_metrics = await data_source.get_team_metrics(seller_ids);
-  const seller_ranking = await data_source.get_seller_ranking(seller_ids);
   
   return {
     user_metrics: total_metrics,

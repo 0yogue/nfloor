@@ -15,6 +15,7 @@ import { Users, Building2, UserCog, Briefcase } from "lucide-react";
 interface LeadMetrics {
   new_count: number;
   qualified_count: number;
+  visit_count: number;
   callback_count: number;
   proposal_count: number;
   sold_count: number;
@@ -111,6 +112,7 @@ export function SubordinatesTable({ subordinates, is_loading }: SubordinatesTabl
                 <TableHead className="text-center">Tipo</TableHead>
                 <TableHead className="text-center">Novos</TableHead>
                 <TableHead className="text-center">Qualif.</TableHead>
+                <TableHead className="text-center">Visitas</TableHead>
                 <TableHead className="text-center">Retorno</TableHead>
                 <TableHead className="text-center">Proposta</TableHead>
                 <TableHead className="text-center">Vendas</TableHead>
@@ -122,6 +124,7 @@ export function SubordinatesTable({ subordinates, is_loading }: SubordinatesTabl
                 const total =
                   sub.metrics.new_count +
                   sub.metrics.qualified_count +
+                  sub.metrics.visit_count +
                   sub.metrics.callback_count +
                   sub.metrics.proposal_count +
                   sub.metrics.sold_count;
@@ -136,6 +139,7 @@ export function SubordinatesTable({ subordinates, is_loading }: SubordinatesTabl
                     </TableCell>
                     <TableCell className="text-center">{sub.metrics.new_count}</TableCell>
                     <TableCell className="text-center">{sub.metrics.qualified_count}</TableCell>
+                    <TableCell className="text-center">{sub.metrics.visit_count}</TableCell>
                     <TableCell className="text-center">{sub.metrics.callback_count}</TableCell>
                     <TableCell className="text-center">{sub.metrics.proposal_count}</TableCell>
                     <TableCell className="text-center font-semibold text-green-500">

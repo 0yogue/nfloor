@@ -56,10 +56,25 @@ MANAGER         → Vê todos os leads da sua empresa
 SELLER          → Vê apenas seus próprios leads
 ```
 
-### Status de Lead
+### Ranking Hierárquico no Dashboard
+```
+DIRECTOR        → Vê consolidado por Superintendência ou Gerência
+SUPERINTENDENT  → Vê consolidado por Gerência
+MANAGER         → Vê métricas de seus vendedores
+SELLER          → Vê apenas seus próprios leads
+```
+
+O dashboard adapta automaticamente a visualização baseada no nível de acesso:
+- **Diretor**: Visualiza métricas agrupadas por Superintendente > Gerente > Vendedor > Área
+- **Superintendente**: Visualiza métricas agrupadas por Gerente > Área
+- **Gerente**: Visualiza métricas individuais de cada vendedor da sua área
+- **Vendedor**: Visualiza apenas suas próprias métricas e leads
+
+### Status de Lead (Funil de Vendas)
 ```
 NEW       → Lead novo, sem contato
-QUALIFIED → Lead qualificado para proposta
+QUALIFIED → Lead qualificado para visita
+VISIT     → Visita agendada/realizada
 CALLBACK  → Aguardando retorno
 PROPOSAL  → Proposta enviada
 SOLD      → Venda realizada

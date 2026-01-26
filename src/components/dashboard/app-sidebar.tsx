@@ -105,10 +105,10 @@ export function AppSidebar({ user }: AppSidebarProps) {
       visible: is_manager_or_higher(user.access_level),
     },
     {
-      title: "Configurações",
-      url: "/dashboard/settings",
+      title: "Config. Integrações",
+      url: "/settings/integrations",
       icon: Settings,
-      visible: is_director_or_higher(user.access_level),
+      visible: is_manager_or_higher(user.access_level),
     },
     {
       title: "Admin Sistema",
