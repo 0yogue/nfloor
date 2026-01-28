@@ -22,10 +22,15 @@ export async function GET(request: NextRequest) {
     const instance_name = get_instance_name(user.company_id || undefined);
     const result = await client.get_instance_info(instance_name);
 
+    // Verificar se a instância existe
+    const instance_exists = result.success && result.data && !result.error;
+    const is_connected = instance_exists && result.data?.state === "open";
+
     return NextResponse.json({
       success: true,
-      instance: result.data,
-      connected: result.data?.state === "open",
+      instance: instance_exists ? result.data : null,
+      connected: is_connected,
+      needs_instance: !instance_exists,
     });
   } catch (error) {
     console.error("WhatsApp API error:", error);

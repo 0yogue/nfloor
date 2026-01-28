@@ -5,6 +5,23 @@ All notable changes to the NFloor project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.3] - 2026-01-28 - WhatsApp UX Improvements
+
+### Changed
+
+- **WhatsApp Connection UX** (`src/components/integrations/whatsapp-connection.tsx`):
+  - QR Code aparece automaticamente ao acessar a página (sem precisar clicar em botões)
+  - Instância é criada automaticamente em background (transparente para o usuário)
+  - QR Code atualiza automaticamente a cada 45s (expira em ~60s)
+  - Countdown visual mostra tempo restante para atualização
+  - Status da conexão é verificado a cada 3s enquanto aguarda escaneamento
+  - Quando conectado, mostra informações do perfil e data de conexão
+  - Botões "Criar Instância" e "Conectar" removidos (fluxo automático)
+  - Apenas mostra botões de ação quando conectado (Sincronizar, Webhook, Desconectar)
+
+- **WhatsApp API** (`src/app/api/integrations/whatsapp/route.ts`):
+  - Retorna `needs_instance: true` quando instância não existe
+
 ## [0.5.2] - 2026-01-28 - Conversations Page & Route Fixes
 
 ### Added
