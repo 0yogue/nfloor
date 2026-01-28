@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { get_session_user } from "@/lib/auth/session";
-import { create_evolution_client } from "@/lib/integrations/evolution-api";
+import { create_evolution_client, get_instance_name } from "@/lib/integrations/evolution-api";
+import { sync_whatsapp_chats } from "@/lib/integrations/whatsapp-sync";
 
 export async function GET(request: NextRequest) {
   try {
@@ -18,7 +19,7 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    const instance_name = `nfloor_${user.company_id || user.id}`;
+    const instance_name = get_instance_name(user.company_id || undefined);
     const result = await client.get_instance_info(instance_name);
 
     return NextResponse.json({
@@ -50,7 +51,7 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    const instance_name = `nfloor_${user.company_id || user.id}`;
+    const instance_name = get_instance_name(user.company_id || undefined);
 
     switch (action) {
       case "create": {
@@ -60,6 +61,7 @@ export async function POST(request: NextRequest) {
 
       case "connect": {
         const result = await client.get_qr_code(instance_name);
+        console.log("[WhatsApp API] QR Code response:", JSON.stringify(result, null, 2));
         return NextResponse.json(result);
       }
 
@@ -79,6 +81,28 @@ export async function POST(request: NextRequest) {
           return NextResponse.json({ success: false, error: "Phone e message são obrigatórios" }, { status: 400 });
         }
         const result = await client.send_text_message(instance_name, phone, message);
+        return NextResponse.json(result);
+      }
+
+      case "sync": {
+        if (!user.company_id) {
+          return NextResponse.json({ success: false, error: "Usuário sem empresa associada" }, { status: 400 });
+        }
+        const sync_result = await sync_whatsapp_chats(client, user.company_id);
+        return NextResponse.json({
+          success: sync_result.success,
+          data: {
+            chats_synced: sync_result.chats_synced,
+            messages_synced: sync_result.messages_synced,
+            leads_created: sync_result.leads_created,
+          },
+          errors: sync_result.errors.length > 0 ? sync_result.errors : undefined,
+        });
+      }
+
+      case "set_webhook": {
+        const webhook_url = body.webhook_url || `${process.env.NEXT_PUBLIC_APP_URL}/api/integrations/whatsapp/webhook`;
+        const result = await client.set_webhook(instance_name, webhook_url);
         return NextResponse.json(result);
       }
 

@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { MessageCircle, Smartphone, RefreshCw, Power, PowerOff, QrCode } from "lucide-react";
+import { MessageCircle, Smartphone, RefreshCw, Power, PowerOff, QrCode, Download, Webhook } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface WhatsAppStatus {
@@ -24,11 +24,19 @@ interface QRCodeData {
   code?: string;
 }
 
+interface SyncResult {
+  chats_synced: number;
+  messages_synced: number;
+  leads_created: number;
+}
+
 export function WhatsAppConnection() {
   const [status, set_status] = useState<WhatsAppStatus | null>(null);
   const [qr_code, set_qr_code] = useState<QRCodeData | null>(null);
   const [is_loading, set_is_loading] = useState(true);
   const [action_loading, set_action_loading] = useState<string | null>(null);
+  const [sync_result, set_sync_result] = useState<SyncResult | null>(null);
+  const [action_message, set_action_message] = useState<string | null>(null);
 
   useEffect(() => {
     check_status();
@@ -50,6 +58,8 @@ export function WhatsAppConnection() {
   async function handle_action(action: string) {
     set_action_loading(action);
     set_qr_code(null);
+    set_sync_result(null);
+    set_action_message(null);
 
     try {
       const response = await fetch("/api/integrations/whatsapp", {
@@ -59,14 +69,44 @@ export function WhatsAppConnection() {
       });
 
       const data = await response.json();
+      console.log(`[WhatsApp ${action}] Response:`, data);
 
-      if (action === "connect" && data.success && data.data?.base64) {
-        set_qr_code(data.data);
+      if (action === "connect" && data.success) {
+        // Evolution API pode retornar base64 em diferentes estruturas
+        const qr_base64 = 
+          data.data?.base64 || 
+          data.data?.qrcode?.base64 ||
+          data.data?.qrcode ||
+          data.base64;
+        
+        if (qr_base64) {
+          set_qr_code({ base64: qr_base64 });
+          console.log("[WhatsApp] QR Code set successfully");
+        } else {
+          console.warn("[WhatsApp] No QR code in response:", data);
+          set_action_message("QR Code não retornado. Tente novamente.");
+        }
+      }
+
+      if (action === "sync" && data.success && data.data) {
+        set_sync_result(data.data);
+      }
+
+      if (action === "set_webhook") {
+        set_action_message(data.success ? "Webhook configurado com sucesso!" : data.error || "Erro ao configurar webhook");
+      }
+
+      if (action === "create") {
+        set_action_message(data.success 
+          ? "Instância criada! Agora clique em 'Conectar' para gerar o QR Code." 
+          : data.error || "Erro ao criar instância"
+        );
       }
 
       await check_status();
     } catch (error) {
       console.error(`Error on action ${action}:`, error);
+      set_action_message("Erro ao executar ação");
     } finally {
       set_action_loading(null);
     }
@@ -156,7 +196,7 @@ export function WhatsAppConnection() {
             </p>
             <div className="p-4 bg-white rounded-lg">
               <img
-                src={`data:image/png;base64,${qr_code.base64}`}
+                src={qr_code.base64.startsWith('data:') ? qr_code.base64 : `data:image/png;base64,${qr_code.base64}`}
                 alt="QR Code WhatsApp"
                 className="w-64 h-64"
               />
@@ -200,19 +240,47 @@ export function WhatsAppConnection() {
           )}
 
           {is_connected && (
-            <Button
-              variant="destructive"
-              onClick={() => handle_action("disconnect")}
-              disabled={action_loading !== null}
-              className="gap-2"
-            >
-              {action_loading === "disconnect" ? (
-                <RefreshCw className="h-4 w-4 animate-spin" />
-              ) : (
-                <PowerOff className="h-4 w-4" />
-              )}
-              Desconectar
-            </Button>
+            <>
+              <Button
+                variant="outline"
+                onClick={() => handle_action("sync")}
+                disabled={action_loading !== null}
+                className="gap-2"
+              >
+                {action_loading === "sync" ? (
+                  <RefreshCw className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Download className="h-4 w-4" />
+                )}
+                Sincronizar Conversas
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => handle_action("set_webhook")}
+                disabled={action_loading !== null}
+                className="gap-2"
+              >
+                {action_loading === "set_webhook" ? (
+                  <RefreshCw className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Webhook className="h-4 w-4" />
+                )}
+                Configurar Webhook
+              </Button>
+              <Button
+                variant="destructive"
+                onClick={() => handle_action("disconnect")}
+                disabled={action_loading !== null}
+                className="gap-2"
+              >
+                {action_loading === "disconnect" ? (
+                  <RefreshCw className="h-4 w-4 animate-spin" />
+                ) : (
+                  <PowerOff className="h-4 w-4" />
+                )}
+                Desconectar
+              </Button>
+            </>
           )}
 
           <Button
@@ -224,6 +292,30 @@ export function WhatsAppConnection() {
             <RefreshCw className={cn("h-4 w-4", is_loading && "animate-spin")} />
           </Button>
         </div>
+
+        {sync_result && (
+          <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+            <p className="text-sm font-medium text-blue-800 dark:text-blue-200">
+              Sincronização concluída!
+            </p>
+            <ul className="mt-2 text-sm text-blue-700 dark:text-blue-300 space-y-1">
+              <li>📱 {sync_result.chats_synced} conversas sincronizadas</li>
+              <li>💬 {sync_result.messages_synced} mensagens importadas</li>
+              <li>👤 {sync_result.leads_created} leads criados</li>
+            </ul>
+          </div>
+        )}
+
+        {action_message && (
+          <div className={cn(
+            "p-4 rounded-lg text-sm",
+            action_message.includes("sucesso")
+              ? "bg-green-50 dark:bg-green-900/20 text-green-800 dark:text-green-200"
+              : "bg-red-50 dark:bg-red-900/20 text-red-800 dark:text-red-200"
+          )}>
+            {action_message}
+          </div>
+        )}
       </CardContent>
     </Card>
   );

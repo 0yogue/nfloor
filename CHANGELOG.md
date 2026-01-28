@@ -5,6 +5,61 @@ All notable changes to the NFloor project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.1] - 2026-01-28 - WhatsApp QR Code Fix
+
+### Fixed
+
+- **QR Code rendering** (`src/components/integrations/whatsapp-connection.tsx`):
+  - Fixed duplicate `data:image/png;base64,` prefix causing QR code not to display
+  - Now correctly handles both prefixed and raw base64 from Evolution API
+  - Added feedback message when instance is created successfully
+
+### Changed
+
+- **Better error handling and logging**:
+  - Added console logs for debugging WhatsApp API responses
+  - Improved user feedback for all WhatsApp actions
+
+## [0.5.0] - 2026-01-28 - WhatsApp Full Integration
+
+### Added
+
+- **WhatsApp Sync Service** (`src/lib/integrations/whatsapp-sync.ts`):
+  - Synchronize all WhatsApp chats to database
+  - Auto-create Leads from WhatsApp contacts (source: `WHATSAPP`)
+  - Round-robin seller assignment for new leads
+  - Import message history with proper timestamps
+  - Real-time message processing via webhook
+
+- **Enhanced WhatsApp API** (`src/app/api/integrations/whatsapp/route.ts`):
+  - `sync` action: Bulk import chats and messages
+  - `set_webhook` action: Configure Evolution API webhook
+
+- **Improved Webhook Handler** (`src/app/api/integrations/whatsapp/webhook/route.ts`):
+  - Process incoming messages in real-time
+  - Create Lead + Conversation + Message on new contacts
+  - Update conversation status (ACTIVE/WAITING_RESPONSE)
+
+- **Enhanced UI** (`src/components/integrations/whatsapp-connection.tsx`):
+  - "Sincronizar Conversas" button with sync results display
+  - "Configurar Webhook" button
+  - Visual feedback for sync results (chats, messages, leads created)
+
+- **Documentation** (`docs/WHATSAPP_INTEGRATION.md`):
+  - Complete setup guide
+  - API reference
+  - Troubleshooting section
+
+### Changed
+
+- **Evolution API Client** (`src/lib/integrations/evolution-api.ts`):
+  - Added `get_instance_name()` helper for consistent instance naming
+  - Instance name now configurable via `EVOLUTION_INSTANCE_NAME` env var
+
+- **Environment variables** (`.env.example`):
+  - Added `EVOLUTION_INSTANCE_NAME`
+  - Added `NEXT_PUBLIC_APP_URL`
+
 ## [0.4.1] - 2026-01-28 - Dashboard Metrics & Seed Expansion
 
 ### Added

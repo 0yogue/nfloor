@@ -135,6 +135,11 @@ export class EvolutionAPIClient {
   }
 }
 
+export function get_instance_name(company_id?: string): string {
+  const base_name = process.env.EVOLUTION_INSTANCE_NAME || "nfloor_whatsapp";
+  return company_id ? `${base_name}_${company_id}` : base_name;
+}
+
 export function create_evolution_client(): EvolutionAPIClient | null {
   const base_url = process.env.EVOLUTION_API_URL;
   const api_key = process.env.EVOLUTION_API_KEY;
@@ -147,6 +152,6 @@ export function create_evolution_client(): EvolutionAPIClient | null {
   return new EvolutionAPIClient({
     base_url,
     api_key,
-    instance_name: "",
+    instance_name: get_instance_name(),
   });
 }
