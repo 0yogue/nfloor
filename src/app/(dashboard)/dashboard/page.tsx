@@ -272,66 +272,72 @@ export default function DashboardPage() {
         />
       )}
 
-      {user.access_level !== AccessLevel.SELLER && (dashboard_data?.seller_ranking?.length || 0) > 0 && (
-        <SellerRankingTable
-          ranking={dashboard_data?.seller_ranking || []}
-          is_loading={is_loading}
-        />
-      )}
+      <div className="flex flex-col gap-4 lg:flex-row">
+        <div className="lg:basis-[30%]">
+          <SalesFunnel
+            metrics={dashboard_data?.total_metrics || empty_metrics}
+            is_loading={is_loading}
+          />
+        </div>
 
-      <div className="grid gap-4 lg:grid-cols-2">
-        <SalesFunnel
-          metrics={dashboard_data?.total_metrics || empty_metrics}
-          is_loading={is_loading}
-        />
-
-        <HierarchicalRanking
-          access_level={user.access_level}
-          subordinates={dashboard_data?.subordinates || []}
-          leads={dashboard_data?.leads as any}
-          is_loading={is_loading}
-        />
+        <div className="lg:basis-[70%]">
+          <HierarchicalRanking
+            access_level={user.access_level}
+            subordinates={dashboard_data?.subordinates || []}
+            leads={dashboard_data?.leads as any}
+            is_loading={is_loading}
+          />
+        </div>
       </div>
 
       {user.access_level !== AccessLevel.SELLER && (
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-lg">Atividades dos Vendedores</CardTitle>
-            <CardDescription>Resumo das atividades recentes da equipe</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-              <div className="flex flex-col gap-1 p-3 rounded-lg border bg-card">
-                <span className="text-xs text-muted-foreground">Ligações Realizadas</span>
-                <span className="text-2xl font-bold text-blue-500">
-                  {dashboard_data?.team_metrics?.new_conversations || 0}
-                </span>
-                <span className="text-xs text-muted-foreground">hoje</span>
+        <div className="grid gap-4 lg:grid-cols-2">
+          {(dashboard_data?.seller_ranking?.length || 0) > 0 && (
+            <SellerRankingTable
+              ranking={dashboard_data?.seller_ranking || []}
+              is_loading={is_loading}
+            />
+          )}
+
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-lg">Atividades dos Vendedores</CardTitle>
+              <CardDescription>Resumo das atividades recentes da equipe</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                <div className="flex flex-col gap-1 p-3 rounded-lg border bg-card">
+                  <span className="text-xs text-muted-foreground">Ligações Realizadas</span>
+                  <span className="text-2xl font-bold text-blue-500">
+                    {dashboard_data?.team_metrics?.new_conversations || 0}
+                  </span>
+                  <span className="text-xs text-muted-foreground">hoje</span>
+                </div>
+                <div className="flex flex-col gap-1 p-3 rounded-lg border bg-card">
+                  <span className="text-xs text-muted-foreground">Visitas Agendadas</span>
+                  <span className="text-2xl font-bold text-purple-500">
+                    {dashboard_data?.total_metrics?.visit_count || 0}
+                  </span>
+                  <span className="text-xs text-muted-foreground">no período</span>
+                </div>
+                <div className="flex flex-col gap-1 p-3 rounded-lg border bg-card">
+                  <span className="text-xs text-muted-foreground">Propostas Enviadas</span>
+                  <span className="text-2xl font-bold text-orange-500">
+                    {dashboard_data?.total_metrics?.proposal_count || 0}
+                  </span>
+                  <span className="text-xs text-muted-foreground">no período</span>
+                </div>
+                <div className="flex flex-col gap-1 p-3 rounded-lg border bg-card">
+                  <span className="text-xs text-muted-foreground">Leads Sem Resposta</span>
+                  <span className="text-2xl font-bold text-red-500">
+                    {dashboard_data?.team_metrics?.leads_without_response || 0}
+                  </span>
+                  <span className="text-xs text-muted-foreground">aguardando</span>
+                </div>
               </div>
-              <div className="flex flex-col gap-1 p-3 rounded-lg border bg-card">
-                <span className="text-xs text-muted-foreground">Visitas Agendadas</span>
-                <span className="text-2xl font-bold text-purple-500">
-                  {dashboard_data?.total_metrics?.visit_count || 0}
-                </span>
-                <span className="text-xs text-muted-foreground">no período</span>
-              </div>
-              <div className="flex flex-col gap-1 p-3 rounded-lg border bg-card">
-                <span className="text-xs text-muted-foreground">Propostas Enviadas</span>
-                <span className="text-2xl font-bold text-orange-500">
-                  {dashboard_data?.total_metrics?.proposal_count || 0}
-                </span>
-                <span className="text-xs text-muted-foreground">no período</span>
-              </div>
-              <div className="flex flex-col gap-1 p-3 rounded-lg border bg-card">
-                <span className="text-xs text-muted-foreground">Leads Sem Resposta</span>
-                <span className="text-2xl font-bold text-red-500">
-                  {dashboard_data?.team_metrics?.leads_without_response || 0}
-                </span>
-                <span className="text-xs text-muted-foreground">aguardando</span>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        </div>
       )}
     </div>
   );

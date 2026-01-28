@@ -92,9 +92,14 @@ Todos os usuários usam a senha: **`123456`**
 | **Super Admin** | admin@nfloor.com | NFloor | Todas as empresas |
 | **Diretor** | diretor@demo.com | Imobiliária Demo | Toda a empresa |
 | **Superintendente** | superintendente@demo.com | Imobiliária Demo | Múltiplas áreas |
+| **Superintendente (1)** | super1@demo.com | Imobiliária Demo | Múltiplas áreas |
+| **Superintendente (2)** | super2@demo.com | Imobiliária Demo | Múltiplas áreas |
+| **Superintendente (3)** | super3@demo.com | Imobiliária Demo | Múltiplas áreas |
 | **Gerente** | gerente@demo.com | Imobiliária Demo | Área Vendas |
+| **Gerentes** | gerente1@demo.com ... gerente6@demo.com | Imobiliária Demo | 1 gerente por área |
 | **Vendedor 1** | vendedor1@demo.com | Imobiliária Demo | Apenas seus leads |
 | **Vendedor 2** | vendedor2@demo.com | Imobiliária Demo | Apenas seus leads |
+| **Vendedores** | vendedor3@demo.com ... vendedor22@demo.com | Imobiliária Demo | Vendedores distribuídos nas áreas |
 
 ### Hierarquia RBAC
 
@@ -103,13 +108,18 @@ SUPER_ADMIN (admin@nfloor.com)
     └── Vê TODAS as empresas
 
 DIRECTOR (diretor@demo.com)
-    └── SUPERINTENDENT (superintendente@demo.com)
-            ├── Área: Vendas
-            │     └── MANAGER (gerente@demo.com)
-            │           └── SELLER (vendedor1@demo.com)
-            │
-            └── Área: Locação
-                  └── SELLER (vendedor2@demo.com)
+    ├── SUPERINTENDENT (superintendente@demo.com)
+    ├── SUPERINTENDENT (super1@demo.com)
+    ├── SUPERINTENDENT (super2@demo.com)
+    └── SUPERINTENDENT (super3@demo.com)
+
+Cada superintendência gerencia um conjunto de áreas (via `AreaManager`).
+
+Exemplo (uma das áreas):
+
+Área: Vendas
+  └── MANAGER (gerente@demo.com ou gerente1@demo.com)
+        └── SELLERS (vendedor1@demo.com, vendedor3@demo.com, ...)
 ```
 
 ---

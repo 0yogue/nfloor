@@ -182,7 +182,7 @@ export class PrismaDataSource implements DashboardDataSource {
     const today_start = new Date();
     today_start.setHours(0, 0, 0, 0);
 
-    const [online_sessions, conversations, messages, playbook_scores, new_leads_count] = await Promise.all([
+    const [online_sessions, conversations, messages, playbook_scores, new_leads_count, first_response_messages] = await Promise.all([
       prisma.session.findMany({
         where: {
           user_id: { in: seller_ids },
@@ -213,9 +213,24 @@ export class PrismaDataSource implements DashboardDataSource {
           created_at: { gte: today_start },
         },
       }),
+      prisma.message.findMany({
+        where: {
+          sender_type: { in: ["LEAD", "SELLER"] },
+          created_at: { gte: today_start },
+          conversation: { seller_id: { in: seller_ids } },
+        },
+        select: { conversation_id: true, sender_type: true, created_at: true },
+        orderBy: { created_at: "asc" },
+      }),
     ]);
 
     const online_seller_ids = new Set(online_sessions.map(s => s.user_id));
+    const online_sellers = online_seller_ids.size > 0
+      ? await prisma.user.findMany({
+          where: { id: { in: Array.from(online_seller_ids) } },
+          select: { id: true, name: true },
+        })
+      : [];
     const new_conversations = conversations.filter(c => c.created_at >= today_start).length;
     const waiting_response = conversations.filter(c => c.status === "WAITING_RESPONSE").length;
 
@@ -246,6 +261,36 @@ export class PrismaDataSource implements DashboardDataSource {
       ? Math.round(response_times.reduce((a, b) => a + b, 0) / response_times.length)
       : 0;
 
+    const first_response_map = new Map<string, { first_lead_at?: Date; first_seller_at?: Date }>();
+    for (const message of first_response_messages) {
+      const entry = first_response_map.get(message.conversation_id) || {};
+
+      if (message.sender_type === "LEAD") {
+        if (!entry.first_lead_at) {
+          entry.first_lead_at = message.created_at;
+        }
+      }
+
+      if (message.sender_type === "SELLER") {
+        if (entry.first_lead_at && !entry.first_seller_at && message.created_at > entry.first_lead_at) {
+          entry.first_seller_at = message.created_at;
+        }
+      }
+
+      first_response_map.set(message.conversation_id, entry);
+    }
+
+    const first_response_times_seconds: number[] = [];
+    for (const entry of first_response_map.values()) {
+      if (!entry.first_lead_at || !entry.first_seller_at) continue;
+      const diff_seconds = Math.round((entry.first_seller_at.getTime() - entry.first_lead_at.getTime()) / 1000);
+      if (diff_seconds >= 0) first_response_times_seconds.push(diff_seconds);
+    }
+
+    const avg_first_response_time = first_response_times_seconds.length > 0
+      ? Math.round(first_response_times_seconds.reduce((a, b) => a + b, 0) / first_response_times_seconds.length)
+      : 0;
+
     const scores = playbook_scores.map(s => s.score);
     const avg_playbook_score = scores.length > 0
       ? Math.round((scores.reduce((a, b) => a + b, 0) / scores.length) * 10) / 10
@@ -254,6 +299,7 @@ export class PrismaDataSource implements DashboardDataSource {
     return {
       sellers_online: online_seller_ids.size,
       sellers_offline: seller_ids.length - online_seller_ids.size,
+      online_sellers,
       new_conversations,
       avg_response_time,
       avg_playbook_score,
@@ -261,7 +307,7 @@ export class PrismaDataSource implements DashboardDataSource {
       avg_attendance_score: avg_playbook_score,
       new_leads: new_leads_count,
       reactivated_conversations,
-      avg_first_response_time: avg_response_time,
+      avg_first_response_time,
       avg_weighted_response_time: Math.round(avg_response_time * 1.2),
       clients_no_response_2h,
       clients_no_response_24h,

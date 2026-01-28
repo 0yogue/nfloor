@@ -5,6 +5,28 @@ All notable changes to the NFloor project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.1] - 2026-01-28 - Dashboard Metrics & Seed Expansion
+
+### Added
+
+- **Dashboard seed expansion** (`prisma/seed.ts`):
+  - Demo org expanded to ~30 users (director, multiple superintendents, managers, sellers)
+  - Additional demo areas
+  - Higher volume of leads/conversations/messages/playbook scores
+  - Multiple online seller sessions for dashboard testing
+
+### Changed
+
+- **Dashboard data source default** (`src/lib/dashboard/index.ts`):
+  - Default dashboard data source switched to `prisma` (override still available via `DASHBOARD_DATA_SOURCE`)
+- **Team metrics UI** (`src/components/dashboard/team-metrics-cards.tsx`):
+  - "Sellers online" moved from a card to an informational line
+  - Card order adjusted (top row: Novos Leads, Nota Média Atendimento)
+- **Potential improvements view** (`src/components/dashboard/hierarchical-ranking.tsx`):
+  - Returned to a list/table layout with updated metrics per subordinate
+- **Dashboard layout** (`src/app/(dashboard)/dashboard/page.tsx`):
+  - Seller ranking moved next to seller activity card in the bottom section
+
 ## [0.4.0] - 2026-01-17 - MVP1 Integrations & AI Temperature
 
 ### Added

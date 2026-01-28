@@ -49,6 +49,7 @@ export async function resolve_manager_dashboard(
   for (const seller of sellers) {
     const leads = await data_source.get_leads_by_seller(seller.id, filter);
     const metrics = calculate_metrics(leads);
+    const seller_team_metrics = await data_source.get_team_metrics([seller.id]);
     
     subordinates.push({
       id: seller.id,
@@ -56,6 +57,7 @@ export async function resolve_manager_dashboard(
       type: "seller",
       access_level: AccessLevel.SELLER,
       metrics,
+      team_metrics: seller_team_metrics,
       avg_response_time: response_time_map.get(seller.id),
     });
   }

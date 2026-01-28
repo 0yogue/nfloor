@@ -35,6 +35,7 @@ export interface LeadMetrics {
 export interface TeamMetrics {
   sellers_online: number;
   sellers_offline: number;
+  online_sellers?: { id: string; name: string }[];
   new_conversations: number;
   avg_response_time: number;
   avg_playbook_score: number;

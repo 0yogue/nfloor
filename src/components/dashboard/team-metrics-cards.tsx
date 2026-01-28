@@ -2,7 +2,6 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { 
-  Users, 
   Star, 
   UserPlus,
   Clock,
@@ -25,12 +24,12 @@ function format_response_time(seconds: number): string {
 export function TeamMetricsCards({ metrics, is_loading }: TeamMetricsCardsProps) {
   const cards = [
     {
-      title: "Vendedores Online",
-      value: metrics.sellers_online,
-      subtitle: `${metrics.sellers_offline} offline`,
-      icon: Users,
-      color: "text-green-500",
-      bg_color: "bg-green-500/10",
+      title: "Novos Leads",
+      value: metrics.new_leads,
+      subtitle: `${metrics.reactivated_conversations} conversas reativadas`,
+      icon: UserPlus,
+      color: "text-blue-500",
+      bg_color: "bg-blue-500/10",
     },
     {
       title: "Nota Média Atendimento",
@@ -40,14 +39,6 @@ export function TeamMetricsCards({ metrics, is_loading }: TeamMetricsCardsProps)
       icon: Star,
       color: metrics.avg_attendance_score >= 8 ? "text-green-500" : metrics.avg_attendance_score >= 6 ? "text-amber-500" : "text-red-500",
       bg_color: metrics.avg_attendance_score >= 8 ? "bg-green-500/10" : metrics.avg_attendance_score >= 6 ? "bg-amber-500/10" : "bg-red-500/10",
-    },
-    {
-      title: "Novos Leads",
-      value: metrics.new_leads,
-      subtitle: `${metrics.reactivated_conversations} conversas reativadas`,
-      icon: UserPlus,
-      color: "text-blue-500",
-      bg_color: "bg-blue-500/10",
     },
     {
       title: "Tempo Médio de Primeira Resposta",
@@ -62,10 +53,18 @@ export function TeamMetricsCards({ metrics, is_loading }: TeamMetricsCardsProps)
       title: "Tempo Médio de Resposta",
       value: format_response_time(metrics.avg_weighted_response_time),
       is_text: true,
-      subtitle: `Taxa média ponderada de resposta • ${metrics.clients_no_response_2h} sem resposta +2h`,
+      subtitle: "Taxa média ponderada de resposta",
       icon: Timer,
       color: metrics.avg_weighted_response_time <= 600 ? "text-green-500" : metrics.avg_weighted_response_time <= 1200 ? "text-amber-500" : "text-red-500",
       bg_color: metrics.avg_weighted_response_time <= 600 ? "bg-green-500/10" : metrics.avg_weighted_response_time <= 1200 ? "bg-amber-500/10" : "bg-red-500/10",
+    },
+    {
+      title: "Cliente sem resposta +2h",
+      value: metrics.clients_no_response_2h,
+      subtitle: "Conversas aguardando resposta do vendedor",
+      icon: UserX,
+      color: metrics.clients_no_response_2h === 0 ? "text-green-500" : metrics.clients_no_response_2h <= 5 ? "text-amber-500" : "text-red-500",
+      bg_color: metrics.clients_no_response_2h === 0 ? "bg-green-500/10" : metrics.clients_no_response_2h <= 5 ? "bg-amber-500/10" : "bg-red-500/10",
     },
     {
       title: "Cliente Sem Resposta 24h",
@@ -77,34 +76,73 @@ export function TeamMetricsCards({ metrics, is_loading }: TeamMetricsCardsProps)
     },
   ];
 
+  const top_row_cards = cards.slice(0, 2);
+  const bottom_row_cards = cards.slice(2);
+
+  const online_names = metrics.online_sellers?.map(s => s.name).join(", ");
+
   return (
     <div className="space-y-4">
       <h3 className="text-lg font-semibold text-muted-foreground">Métricas do Time</h3>
-      <div className="grid gap-4 grid-cols-2 md:grid-cols-3 lg:grid-cols-6">
-        {cards.map((card) => (
-          <Card key={card.title} className="relative overflow-hidden">
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
-                {card.title}
-              </CardTitle>
-              <div className={`p-2 rounded-lg ${card.bg_color}`}>
-                <card.icon className={`h-4 w-4 ${card.color}`} />
-              </div>
-            </CardHeader>
-            <CardContent>
-              {is_loading ? (
-                <div className="h-8 w-16 animate-pulse bg-muted rounded" />
-              ) : (
-                <div className="space-y-1">
-                  <div className="text-2xl font-bold">{card.value}</div>
-                  {card.subtitle && (
-                    <p className="text-xs text-muted-foreground">{card.subtitle}</p>
-                  )}
+      <div className="text-xs text-muted-foreground">
+        <span className="font-medium text-foreground">Online agora:</span>{" "}
+        {metrics.sellers_online} vendedor(es)
+        {online_names ? ` — ${online_names}` : ""}
+        {metrics.sellers_offline > 0 ? ` (${metrics.sellers_offline} offline)` : ""}
+      </div>
+      <div className="space-y-4">
+        <div className="grid gap-4 grid-cols-2">
+          {top_row_cards.map((card) => (
+            <Card key={card.title} className="relative overflow-hidden">
+              <CardHeader className="flex flex-row items-center justify-between pb-2">
+                <CardTitle className="text-sm font-medium text-muted-foreground">
+                  {card.title}
+                </CardTitle>
+                <div className={`p-2 rounded-lg ${card.bg_color}`}>
+                  <card.icon className={`h-4 w-4 ${card.color}`} />
                 </div>
-              )}
-            </CardContent>
-          </Card>
-        ))}
+              </CardHeader>
+              <CardContent>
+                {is_loading ? (
+                  <div className="h-8 w-16 animate-pulse bg-muted rounded" />
+                ) : (
+                  <div className="space-y-1">
+                    <div className="text-2xl font-bold">{card.value}</div>
+                    {card.subtitle && (
+                      <p className="text-xs text-muted-foreground">{card.subtitle}</p>
+                    )}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+        <div className="grid gap-4 grid-cols-2 md:grid-cols-4">
+          {bottom_row_cards.map((card) => (
+            <Card key={card.title} className="relative overflow-hidden">
+              <CardHeader className="flex flex-row items-center justify-between pb-2">
+                <CardTitle className="text-sm font-medium text-muted-foreground">
+                  {card.title}
+                </CardTitle>
+                <div className={`p-2 rounded-lg ${card.bg_color}`}>
+                  <card.icon className={`h-4 w-4 ${card.color}`} />
+                </div>
+              </CardHeader>
+              <CardContent>
+                {is_loading ? (
+                  <div className="h-8 w-16 animate-pulse bg-muted rounded" />
+                ) : (
+                  <div className="space-y-1">
+                    <div className="text-2xl font-bold">{card.value}</div>
+                    {card.subtitle && (
+                      <p className="text-xs text-muted-foreground">{card.subtitle}</p>
+                    )}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          ))}
+        </div>
       </div>
     </div>
   );

@@ -61,6 +61,10 @@ export async function resolve_superintendent_dashboard(
       const area = await data_source.get_area(manager.area_id);
       const leads = await data_source.get_leads_by_area(manager.area_id, filter);
       const metrics = calculate_metrics(leads);
+      const scoped_seller_ids = sellers.filter(s => s.area_id === manager.area_id).map(s => s.id);
+      const subordinate_team_metrics = scoped_seller_ids.length > 0
+        ? await data_source.get_team_metrics(scoped_seller_ids)
+        : empty_team_metrics();
       
       // Get sellers in this manager's area and calculate avg response time
       const area_sellers = sellers.filter(s => s.area_id === manager.area_id);
@@ -75,6 +79,7 @@ export async function resolve_superintendent_dashboard(
         type: "manager",
         access_level: AccessLevel.MANAGER,
         metrics,
+        team_metrics: subordinate_team_metrics,
         avg_response_time,
       });
     }
@@ -87,6 +92,10 @@ export async function resolve_superintendent_dashboard(
       
       const leads = await data_source.get_leads_by_area(area.id, filter);
       const metrics = calculate_metrics(leads);
+      const scoped_seller_ids = sellers.filter(s => s.area_id === area.id).map(s => s.id);
+      const subordinate_team_metrics = scoped_seller_ids.length > 0
+        ? await data_source.get_team_metrics(scoped_seller_ids)
+        : empty_team_metrics();
       
       // Get sellers in this area and calculate avg response time
       const area_sellers = sellers.filter(s => s.area_id === area.id);
@@ -100,6 +109,7 @@ export async function resolve_superintendent_dashboard(
         name: area.name,
         type: "area",
         metrics,
+        team_metrics: subordinate_team_metrics,
         avg_response_time,
       });
     }

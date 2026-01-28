@@ -1,6 +1,6 @@
 # 📊 Status de Implementação - NFloor CRM
 
-**Última atualização:** Janeiro 2026
+**Última atualização:** 28/01/2026
 
 ---
 
@@ -17,9 +17,10 @@
 ### 2. Dashboard
 | Recurso | Status | Descrição |
 |---------|--------|-----------|
-| Métricas do Time | ✅ Completo | 6 cards: Vendedores Online, Nota Média Atendimento, Novos Leads, Tempo Médio Primeira Resposta, Tempo Médio Resposta, Cliente Sem Resposta 24h |
+| Métricas do Time | ✅ Completo | 6 cards: Novos Leads, Nota Média Atendimento, Tempo Médio de 1ª Resposta, Tempo Médio de Resposta, Cliente sem resposta +2h, Cliente sem resposta +24h. Status "Online agora" exibido como linha informativa (não card). |
 | Funil de Vendas | ✅ Completo | Visualização: Leads > Visitas > Retorno > Proposta > Vendas |
-| Ranking Hierárquico | ✅ Completo | Métricas por subordinado com tempo de resposta |
+| Ranking Hierárquico ("Potencial de Melhorias") | ✅ Completo | Exibição em lista/tabela por subordinado com: Nota Média Atendimento, Tempo médio de 1ª resposta, Cliente sem resposta +2h, Cliente sem resposta +24h |
+| Ranking de Vendedores | ✅ Completo | Exibição ao lado do card de Atividades dos Vendedores na parte inferior do dashboard (layout responsivo) |
 | Ligue Hoje | ✅ Completo | Lista de leads prioritários ordenados por IA |
 
 ### 3. Gestão de Leads
@@ -218,4 +219,4 @@ npx prisma generate
 
 ---
 
-**Feedback:** 92/100 - Sistema funcional com autenticação, RBAC, dashboard completo com métricas do time, funil de vendas simplificado e integração HubSpot pronta. Pendências: aplicar migração, edição de leads e configuração WhatsApp.
+**Feedback:** 94/100 - Sistema funcional com autenticação, RBAC e dashboard atualizado (métricas de time com "Online agora" como linha, ranking hierárquico em lista com novas métricas e ranking de vendedores reposicionado). Seed demo expandido para simular imobiliária com ~30 usuários. Datasource do dashboard configurado para usar Prisma por padrão.

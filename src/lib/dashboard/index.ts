@@ -5,7 +5,7 @@ import { PrismaDataSource } from "./adapter-prisma";
 export type DataSourceType = "mock" | "prisma";
 
 const DATA_SOURCE_TYPE: DataSourceType = 
-  (process.env.DASHBOARD_DATA_SOURCE as DataSourceType) || "mock";
+  (process.env.DASHBOARD_DATA_SOURCE as DataSourceType) || "prisma";
 
 let data_source_instance: DashboardDataSource | null = null;
 
