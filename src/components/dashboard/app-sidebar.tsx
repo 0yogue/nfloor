@@ -73,19 +73,19 @@ export function AppSidebar({ user }: AppSidebarProps) {
     },
     {
       title: "Conversas",
-      url: "/dashboard/conversations",
+      url: "/conversations",
       icon: MessageSquare,
       visible: true,
     },
     {
       title: "Analytics",
-      url: "/dashboard/analytics",
+      url: "/analytics",
       icon: BarChart3,
       visible: is_manager_or_higher(user.access_level),
     },
     {
       title: "Notificações",
-      url: "/dashboard/notifications",
+      url: "/notifications",
       icon: Bell,
       visible: true,
     },
@@ -100,7 +100,7 @@ export function AppSidebar({ user }: AppSidebarProps) {
   const admin_nav_items = [
     {
       title: "Usuários",
-      url: "/dashboard/users",
+      url: "/users",
       icon: Users,
       visible: is_manager_or_higher(user.access_level),
     },
@@ -112,7 +112,7 @@ export function AppSidebar({ user }: AppSidebarProps) {
     },
     {
       title: "Admin Sistema",
-      url: "/dashboard/admin",
+      url: "/admin",
       icon: Shield,
       visible: is_super_admin(user.access_level),
     },
@@ -219,7 +219,7 @@ export function AppSidebar({ user }: AppSidebarProps) {
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
-                  <Link href="/dashboard/profile">
+                  <Link href="/profile">
                     <Settings className="mr-2 h-4 w-4" />
                     Perfil
                   </Link>

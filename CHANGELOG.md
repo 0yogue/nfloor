@@ -5,6 +5,38 @@ All notable changes to the NFloor project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.2] - 2026-01-28 - Conversations Page & Route Fixes
+
+### Added
+
+- **Conversations page** (`/conversations`):
+  - List all WhatsApp conversations synced from Evolution API
+  - Search by name, phone, or chat ID
+  - Display lead info, message count, and last activity
+  - Status badges (Active, Waiting, Closed, Archived)
+
+- **New pages** (placeholder):
+  - `/analytics` - Analytics dashboard (coming soon)
+  - `/notifications` - User notifications
+  - `/users` - User management
+  - `/profile` - User profile page
+  - `/admin` - System administration
+
+- **Conversations API** (`/api/conversations`):
+  - GET endpoint to fetch conversations with lead data
+  - Pagination, search, and status filtering
+
+### Changed
+
+- **Menu links** (`src/components/dashboard/app-sidebar.tsx`):
+  - Removed `/dashboard` prefix from routes
+  - `/dashboard/conversations` → `/conversations`
+  - `/dashboard/analytics` → `/analytics`
+  - `/dashboard/notifications` → `/notifications`
+  - `/dashboard/users` → `/users`
+  - `/dashboard/admin` → `/admin`
+  - `/dashboard/profile` → `/profile`
+
 ## [0.5.1] - 2026-01-28 - WhatsApp QR Code Fix
 
 ### Fixed
