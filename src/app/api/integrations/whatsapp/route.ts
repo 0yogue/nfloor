@@ -22,13 +22,35 @@ export async function GET(request: NextRequest) {
     const instance_name = get_instance_name(user.company_id || undefined);
     const result = await client.get_instance_info(instance_name);
 
-    // Verificar se a instância existe
-    const instance_exists = result.success && result.data && !result.error;
-    const is_connected = instance_exists && result.data?.state === "open";
+    // Evolution API pode retornar array ou objeto
+    // Normalizar para encontrar a instância correta
+    let instance_data = null;
+    
+    if (result.success && result.data) {
+      if (Array.isArray(result.data)) {
+        // Buscar instância pelo nome no array
+        instance_data = result.data.find((i: { name?: string }) => i.name === instance_name) || result.data[0];
+      } else {
+        instance_data = result.data;
+      }
+    }
+
+    // Verificar se a instância existe e está conectada
+    // Evolution API usa "connectionStatus" ou "state"
+    const instance_exists = !!instance_data;
+    const connection_status = instance_data?.connectionStatus || instance_data?.state;
+    const is_connected = instance_exists && connection_status === "open";
 
     return NextResponse.json({
       success: true,
-      instance: instance_exists ? result.data : null,
+      instance: instance_exists ? {
+        instanceName: instance_data.name || instance_data.instanceName,
+        state: connection_status,
+        profileName: instance_data.profileName,
+        profilePicUrl: instance_data.profilePicUrl,
+        number: instance_data.ownerJid?.replace("@s.whatsapp.net", "") || instance_data.number,
+        createdAt: instance_data.createdAt,
+      } : null,
       connected: is_connected,
       needs_instance: !instance_exists,
     });
