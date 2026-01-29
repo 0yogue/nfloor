@@ -106,14 +106,36 @@ export class EvolutionAPIClient {
     webhook_url: string,
     events: string[] = ["MESSAGES_UPSERT", "CONNECTION_UPDATE"]
   ): Promise<EvolutionAPIResponse<void>> {
-    return this.request<void>(`/webhook/set/${instance_name}`, {
+    // Evolution API v2 usa /webhook/set/{instance}
+    // Alguns servidores usam PUT em vez de POST
+    const result = await this.request<void>(`/webhook/set/${instance_name}`, {
       method: "POST",
       body: JSON.stringify({
-        url: webhook_url,
-        webhook_by_events: false,
-        events,
+        webhook: {
+          enabled: true,
+          url: webhook_url,
+          webhookByEvents: false,
+          events,
+        },
       }),
     });
+
+    // Se falhar com POST, tentar PUT (algumas versões da Evolution API)
+    if (!result.success) {
+      return this.request<void>(`/webhook/set/${instance_name}`, {
+        method: "PUT",
+        body: JSON.stringify({
+          webhook: {
+            enabled: true,
+            url: webhook_url,
+            webhookByEvents: false,
+            events,
+          },
+        }),
+      });
+    }
+
+    return result;
   }
 
   async get_chats(instance_name: string): Promise<EvolutionAPIResponse<unknown[]>> {
