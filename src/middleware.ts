@@ -10,6 +10,7 @@ const PUBLIC_PATHS = [
   "/api/auth/me",
   "/api/auth/logout",
   "/api/health",
+  "/api/integrations/whatsapp/webhook",
 ];
 
 const STATIC_PATHS = ["/_next", "/favicon.ico", "/images", "/fonts"];
