@@ -5,16 +5,27 @@
  * Uso: npx tsx scripts/import-whatsapp-chats.ts
  */
 
-import * as dotenv from "dotenv";
-dotenv.config({ path: ".env.local" });
-dotenv.config({ path: ".env" });
-
+import "dotenv/config";
 import { PrismaClient, LeadSource, SenderType, ConversationStatus } from "@prisma/client";
+import { PrismaPg } from "@prisma/adapter-pg";
+import { Pool } from "pg";
 import * as fs from "fs";
 import * as path from "path";
 import AdmZip from "adm-zip";
 
-const prisma = new PrismaClient();
+function create_prisma_client(): PrismaClient {
+  const connection_string = process.env.DATABASE_URL;
+  
+  if (!connection_string) {
+    throw new Error("DATABASE_URL environment variable is not set");
+  }
+  
+  const pool = new Pool({ connectionString: connection_string });
+  const adapter = new PrismaPg(pool);
+  return new PrismaClient({ adapter });
+}
+
+const prisma = create_prisma_client();
 
 interface ParsedMessage {
   date: Date;
