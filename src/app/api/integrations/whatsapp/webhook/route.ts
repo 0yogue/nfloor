@@ -6,9 +6,10 @@ export async function POST(request: NextRequest) {
   try {
     const payload: EvolutionWebhookPayload = await request.json();
 
-    console.log("[WhatsApp Webhook]", payload.event, payload.instance);
+    const event_name = payload.event?.toUpperCase().replace(".", "_");
+    console.log("[WhatsApp Webhook]", payload.event, "->", event_name, payload.instance);
 
-    switch (payload.event) {
+    switch (event_name) {
       case "MESSAGES_UPSERT": {
         const message_text =
           payload.data.message?.conversation ||
