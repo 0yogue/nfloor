@@ -1,7 +1,13 @@
 /**
  * Script para importar conversas do WhatsApp exportadas (.zip)
  * Formato: DD/MM/YYYY HH:MM - Nome: Mensagem
+ * 
+ * Uso: npx tsx scripts/import-whatsapp-chats.ts
  */
+
+import * as dotenv from "dotenv";
+dotenv.config({ path: ".env.local" });
+dotenv.config({ path: ".env" });
 
 import { PrismaClient, LeadSource, SenderType, ConversationStatus } from "@prisma/client";
 import * as fs from "fs";
