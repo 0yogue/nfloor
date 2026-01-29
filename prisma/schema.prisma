@@ -44,9 +44,10 @@ model Company {
   created_at         DateTime    @default(now())
   updated_at         DateTime    @updatedAt
 
-  areas        Area[]
-  users        User[]
-  integrations CompanyIntegration[]
+  areas              Area[]
+  users              User[]
+  integrations       CompanyIntegration[]
+  whatsapp_allowlist WhatsappAllowlist[]
 
   @@index([license_type])
   @@index([is_active])
@@ -346,4 +347,26 @@ model HubSpotSyncLog {
 
   @@index([company_id])
   @@index([started_at])
+}
+
+// ============================================================================
+// WHATSAPP_ALLOWLIST - Whitelist de contatos permitidos para receber mensagens
+// ============================================================================
+
+model WhatsappAllowlist {
+  id         String   @id @default(cuid())
+  company_id String
+  phone      String   // Telefone no formato internacional (ex: 5511999999999)
+  name       String?  // Nome do contato (opcional)
+  email      String?  // Email do contato (opcional)
+  notes      String?  // Observações
+  is_active  Boolean  @default(true)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  company Company @relation(fields: [company_id], references: [id], onDelete: Cascade)
+
+  @@unique([company_id, phone])
+  @@index([company_id])
+  @@index([phone])
 }

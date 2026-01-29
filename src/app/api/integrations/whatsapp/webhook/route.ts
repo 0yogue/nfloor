@@ -8,12 +8,22 @@ export async function POST(request: NextRequest) {
 
     const event_name = payload.event?.toUpperCase().replace(".", "_");
     console.log("[WhatsApp Webhook]", payload.event, "->", event_name, payload.instance);
+    console.log("[WhatsApp Webhook] Full payload:", JSON.stringify(payload, null, 2));
 
     switch (event_name) {
       case "MESSAGES_UPSERT": {
+        // Evolution API v2 pode enviar mensagem em diferentes formatos
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const data = payload.data as any;
+        const msg = data?.message || data;
         const message_text =
-          payload.data.message?.conversation ||
-          payload.data.message?.extendedTextMessage?.text;
+          msg?.conversation ||
+          msg?.extendedTextMessage?.text ||
+          msg?.message?.conversation ||
+          msg?.message?.extendedTextMessage?.text ||
+          data?.body; // Alguns formatos usam body direto
+
+        console.log("[Webhook] Extracted message:", message_text);
 
         if (message_text) {
           const remote_jid = payload.data.key.remoteJid;

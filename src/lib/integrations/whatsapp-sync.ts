@@ -364,7 +364,7 @@ export async function process_incoming_message(
   push_name: string | null,
   timestamp: number,
   from_me: boolean
-): Promise<{ success: boolean; error?: string }> {
+): Promise<{ success: boolean; error?: string; filtered?: boolean }> {
   try {
     const instance_parts = instance_name.split("_");
     const company_id = instance_parts.length > 2 ? instance_parts.slice(2).join("_") : null;
@@ -391,6 +391,27 @@ export async function process_incoming_message(
 
     if (!target_company_id) {
       return { success: false, error: "Empresa não encontrada" };
+    }
+
+    // Verificar se a empresa tem whitelist ativa
+    const allowlist_count = await prisma.whatsappAllowlist.count({
+      where: { company_id: target_company_id, is_active: true },
+    });
+
+    // Se existe whitelist, verificar se o telefone está na lista
+    if (allowlist_count > 0) {
+      const is_allowed = await prisma.whatsappAllowlist.findFirst({
+        where: {
+          company_id: target_company_id,
+          phone: phone,
+          is_active: true,
+        },
+      });
+
+      if (!is_allowed) {
+        console.log(`[Webhook] Telefone ${phone} não está na whitelist - ignorando`);
+        return { success: true, filtered: true };
+      }
     }
 
     const { lead_id, seller_id } = await find_or_create_lead_by_phone(
